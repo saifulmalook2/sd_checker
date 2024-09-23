@@ -28,7 +28,9 @@ async def root():
 
 @app.post("/name_check/{company_name}")
 async def name_check( company_name: str, html_text: str = Body(..., media_type="text/html")):
+    logging.info(f"Checking Name {company_name}")
     response = await check_company(html_text, company_name)
+    logging.info(response)
     return  response
 
     

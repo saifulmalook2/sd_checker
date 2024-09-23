@@ -1,6 +1,6 @@
 import requests
 
-url = 'http://161.35.127.137:8000/name_check'
+url = 'http://161.35.127.137:8000/name_check/Zeneth One'
 html_content = '''
 <div class="ql-editor" data-gramm="false" contenteditable="true">
   <h2>
@@ -1406,5 +1406,5 @@ html_content = '''
 
 '''
 
-response = requests.post(url, data=html_content, headers={'Content-Type': 'text/html'}, params={'company_name': 'Zenith One Ltd'})
+response = requests.post(url, data=html_content, headers={'Content-Type': 'text/html'})
 print(response.json())
