@@ -2,8 +2,6 @@ from openai import AzureOpenAI
 import os
 import json
 
-fdsfsd
-
 client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
