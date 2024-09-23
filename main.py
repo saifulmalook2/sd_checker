@@ -42,3 +42,8 @@ async def name_check( company_name: str, html_text: str = Body(..., media_type="
 async def name_check(given_date: str, html_text: str = Body(..., media_type="text/html")):
     response = await check_date(html_text, given_date)
     return  response
+
+@app.post("/grammar_check")
+async def name_check( html_text: str = Body(..., media_type="text/html")):
+    response = await check_date(html_text)
+    return  response

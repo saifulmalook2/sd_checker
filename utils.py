@@ -39,3 +39,24 @@ async def check_date(html_text, given_date):
     print(response_text)
     return filtered_response
 
+
+async def check_grammar(html_text):
+    response = client.chat.completions.create(
+        response_format={"type": "json_object"},
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."
+            },
+            {
+                "role": "user",
+                "content": f"Check the following page content for grammar mistakes (punctuation and typos). Return a list of JSON objects, each containing the incorrect phrase and the corresponding sentence. Format the response as mistakes: [{{'incorrect_phrase': '...', 'sentence': '...'}}, {{'incorrect_phrase': '...', 'sentence': '...'}}]. Page content: {html_text}"
+            }
+        ],
+    )
+    response_text = response.choices[0].message.content.strip()
+    filtered_response = json.loads(response_text)
+
+    print(response_text)
+    return filtered_response
