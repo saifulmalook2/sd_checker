@@ -15,7 +15,7 @@ async def check_company(html_text, company_name):
         model="gpt-4o",
         messages=[
          {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-        {"role": "user", "content": f"Check if the company mentioned in the following page content matches '{company_name}'. If the company name mentioned does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in. Format the response as mistakes : [{{'incorrect_name': '...', 'sentence': '...'}}, {{'incorrect_name': '...', 'sentence': '...'}}]. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}
+        {"role": "user", "content": f"Check if the company mentioned in the following page content matches '{company_name}'. If the company name mentioned does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes : [{{'incorrect_name': '...', 'sentence': '...'}}, {{'incorrect_name': '...', 'sentence': '...'}}]. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}
         ],
     )
 
@@ -30,7 +30,7 @@ async def check_date(html_text, given_date):
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-            {"role": "user", "content": f"Check if the date mentioned in the following page content matches '{given_date}'. If the date mentioned does not match, return a list of JSON objects, each containing the incorrect date and the sentence it is mentioned in. Format the response as mistakes: [{{'incorrect_date': '...', 'sentence': '...'}}, {{'incorrect_date': '...', 'sentence': '...'}}]. Find all the incorrect dates and append the JSON to the list. Page content: {html_text}"}
+            {"role": "user", "content": f"Check if the date mentioned in the following page content matches '{given_date}'. If the date mentioned does not match, return a list of JSON objects, each containing the incorrect date and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes: [{{'incorrect_date': '...', 'sentence': '...'}}, {{'incorrect_date': '...', 'sentence': '...'}}]. Find all the incorrect dates and append the JSON to the list. Page content: {html_text}"}
         ],
     )
     response_text = response.choices[0].message.content.strip()
@@ -38,7 +38,6 @@ async def check_date(html_text, given_date):
 
     print(response_text)
     return filtered_response
-
 
 async def check_grammar(html_text):
     response = client.chat.completions.create(
@@ -55,6 +54,35 @@ async def check_grammar(html_text):
             }
         ],
     )
+    response_text = response.choices[0].message.content.strip()
+    filtered_response = json.loads(response_text)
+
+    print(response_text)
+    return filtered_response
+
+
+async def check_sections(html_text):
+
+    response = client.chat.completions.create(
+        response_format={"type": "json_object"},
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate or provide information not directly found in the content."
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"Check the following system description for the presence and quality of sections DC1 to DC9. "
+                    f"Ensure all sections are present and that none use templated language. "
+                    f"Return a list of missing sections and sections with templated language. "
+                    f"Page content: {html_text}"
+                )
+            }
+        ],
+    )
+    
     response_text = response.choices[0].message.content.strip()
     filtered_response = json.loads(response_text)
 
