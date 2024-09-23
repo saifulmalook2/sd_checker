@@ -5,23 +5,21 @@ from typing import List
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder 
 import os        
+from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
 from utils import check_company, check_date
-
-logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
-# hack to get rid of langchain logs
-httpx_logger = logging.getLogger("httpx")
-httpx_logger.setLevel(logging.WARNING)
-
-
-def file_exists(directory, filename):
-    file_path = os.path.join(directory, filename)
-    return os.path.isfile(file_path)
-
 
 
 app = FastAPI()
 
 
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 @app.get("/")
 async def root():
