@@ -8,6 +8,10 @@ import os
 from fastapi.middleware.cors import CORSMiddleware  
 from utils import check_company, check_date
 
+logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
+# hack to get rid of langchain logs
+httpx_logger = logging.getLogger("httpx")
+httpx_logger.setLevel(logging.WARNING)
 
 app = FastAPI()
 
