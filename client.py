@@ -1,6 +1,6 @@
 import requests
 
-url = 'http://161.35.127.137:8000/date_check/20 september 2024'
+url = 'http://161.35.127.137:8000/grammar_check'
 html_content = '''
 <div class="ql-editor" data-gramm="false" contenteditable="true">
   <h2>
