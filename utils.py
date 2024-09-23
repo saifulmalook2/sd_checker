@@ -51,7 +51,7 @@ async def check_grammar(html_text):
             },
             {
                 "role": "user",
-                "content": f"Check the following page content for grammar mistakes (punctuation and typos). Return a list of JSON objects, each containing the incorrect phrase and the corresponding sentence. Format the response as mistakes: [{{'incorrect_phrase': '...', 'sentence': '...'}}, {{'incorrect_phrase': '...', 'sentence': '...'}}]. Page content: {html_text}"
+                "content": f"Check the following page content for grammar mistakes (punctuation and typos). Return a list of JSON objects, each containing the incorrect phrase and what the mistake is. Format the response as mistakes: [{{'incorrect_phrase': '...', 'reason': '...'}}, {{'incorrect_phrase': '...', 'reason': '...'}}]. Page content: {html_text}"
             }
         ],
     )
