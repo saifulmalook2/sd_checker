@@ -1,6 +1,7 @@
 from openai import AzureOpenAI
 import os
 import json
+from bs4 import BeautifulSoup
 
 client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -61,6 +62,10 @@ async def check_grammar(html_text):
     return filtered_response
 
 async def check_sections(html_text):
+    soup = BeautifulSoup(html_text, 'html.parser')
+
+    # Extract text
+    html_text = soup.get_text()
 
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
