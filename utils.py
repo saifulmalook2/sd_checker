@@ -74,8 +74,8 @@ async def check_sections(html_text):
                 "role": "user",
                 "content": (
                     f"Check the following system description for the presence and quality of sections DC1 to DC9. "
-                    f"Ensure all sections are present and that none use templated language. "
-                    f"Return a list of missing sections and sections with templated language. "
+                    f"Ensure all sections are present and that none use placeholder text or templated language. "
+                    f"Return a list of missing sections and sections with placeholder text or templated language. "
                     f"Format the JSON response as mistakes: [{{'incorrect_section': '...', 'reason': '...'}}, {{'incorrect_section': '...', 'reason': '...'}}]"
                     f"Page content: {html_text}"
                 )
