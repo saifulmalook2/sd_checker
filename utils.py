@@ -64,7 +64,6 @@ async def check_grammar(html_text):
 async def check_sections(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
 
-    # Extract text
     html_text = soup.get_text()
 
     response = client.chat.completions.create(
