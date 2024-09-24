@@ -1,6 +1,6 @@
 import requests
 
-url = 'http://161.35.127.137:8000/section_check'
+url = 'http://161.35.127.137:8000/grammar_check'
 html_content = '''
 <div class="ql-editor" data-gramm="false" contenteditable="true">
   <h2>
@@ -128,8 +128,7 @@ html_content = '''
     ●Creating and managing Data Vaults that store PII with complete audit trail
   </p>
   <p style="background-color: rgb(255, 255, 255)">
-    ●Perform client profiling: risk questionnaires or sustainability
-    questionnaires
+    ●Perform client profiling: risk questionnaires or sustainability questionnaires
   </p>
   <p style="background-color: rgb(255, 255, 255)">
     ●Use conditions to make decisions or perform assessments to make a decision
