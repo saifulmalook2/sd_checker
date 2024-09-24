@@ -50,7 +50,7 @@ async def check_grammar(html_text):
             },
             {
                 "role": "user",
-                "content": f"Check the following page content for grammar mistakes (punctuation and typos). Return a list of JSON objects, each containing the incorrect phrase and what the mistake is. Format the response as mistakes: [{{'incorrect_phrase': '...', 'reason': '...'}}, {{'incorrect_phrase': '...', 'reason': '...'}}]. Page content: {html_text}"
+                "content": f"Check the following page content for grammar mistakes (punctuation and typos). Return a list of JSON objects, each containing the incorrect phrase and what the mistake is. Format the response as mistakes: [{{'incorrect_phrase': '...', 'reason': '...'}}, {{'incorrect_phrase': '...', 'reason': '...'}}] ((The sentence should be plain text, not HTML)). Page content: {html_text}"
             }
         ],
     )
@@ -76,6 +76,7 @@ async def check_sections(html_text):
                     f"Check the following system description for the presence and quality of sections DC1 to DC9. "
                     f"Ensure all sections are present and that none use templated language. "
                     f"Return a list of missing sections and sections with templated language. "
+                    f"Format the JSON response as mistakes: [{{'incorrect_section': '...', 'reason': '...'}}, {{'incorrect_section': '...', 'reason': '...'}}]"
                     f"Page content: {html_text}"
                 )
             }

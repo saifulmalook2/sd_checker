@@ -1,6 +1,6 @@
 import requests
 
-url = 'http://161.35.127.137:8000/name_check/Zenith One'
+url = 'http://161.35.127.137:8000/section_check'
 html_content = '''
 <div class="ql-editor" data-gramm="false" contenteditable="true">
   <h2>
