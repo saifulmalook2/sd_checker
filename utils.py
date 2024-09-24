@@ -11,6 +11,10 @@ client = AzureOpenAI(
 )
 
 async def check_company(html_text, company_name):
+    soup = BeautifulSoup(html_text, 'html.parser')
+
+    html_text = soup.get_text()
+    
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
@@ -26,6 +30,10 @@ async def check_company(html_text, company_name):
     return filtered_response
 
 async def check_date(html_text, given_date):
+    soup = BeautifulSoup(html_text, 'html.parser')
+
+    html_text = soup.get_text()
+
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
@@ -41,6 +49,10 @@ async def check_date(html_text, given_date):
     return filtered_response
 
 async def check_grammar(html_text):
+    soup = BeautifulSoup(html_text, 'html.parser')
+
+    html_text = soup.get_text()
+
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
@@ -60,8 +72,6 @@ async def check_grammar(html_text):
 
     print(response_text)
     return filtered_response
-
-
 
 async def check_sections(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
