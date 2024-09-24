@@ -60,7 +60,6 @@ async def check_grammar(html_text):
     print(response_text)
     return filtered_response
 
-
 async def check_sections(html_text):
 
     response = client.chat.completions.create(

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder 
 import os        
 from fastapi.middleware.cors import CORSMiddleware  
-from utils import check_company, check_date, check_grammar
+from utils import check_company, check_date, check_grammar, check_sections
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -39,11 +39,20 @@ async def name_check( company_name: str, html_text: str = Body(..., media_type="
 
     
 @app.post("/date_check/{given_date}")
-async def name_check(given_date: str, html_text: str = Body(..., media_type="text/html")):
+async def date_check(given_date: str, html_text: str = Body(..., media_type="text/html")):
+    logging.info(f"Checking Date {given_date}")
+
     response = await check_date(html_text, given_date)
     return  response
 
 @app.post("/grammar_check")
-async def name_check( html_text: str = Body(..., media_type="text/html")):
+async def grammar_check( html_text: str = Body(..., media_type="text/html")):
+    logging.info(f"Checking Grammer")
     response = await check_grammar(html_text)
+    return  response
+
+@app.post("/section_check")
+async def section_check( html_text: str = Body(..., media_type="text/html")):
+    logging.info(f"Checking Sections")
+    response = await check_sections(html_text)
     return  response
