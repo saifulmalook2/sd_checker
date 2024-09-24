@@ -91,7 +91,7 @@ async def check_sections(html_text):
                 "content": (
                     f"Check the following system description for the presence and quality of sections DC1 to DC9. "
                     f"Ensure all sections are present and that all the sections actually contain information"
-                    f"Return a list of missing sections and sections with incomplete information. "
+                    f"Return a list of missing sections and sections with no relevant information. "
                     f"Format the JSON response as mistakes: [{{'incorrect_section': '...', 'reason': '...'}}, {{'incorrect_section': '...', 'reason': '...'}}]"
                     f"Page content: {html_text}"
                 )
