@@ -1381,17 +1381,6 @@ html_content = '''
   <p style="background-color: rgb(255, 255, 255)"><br /></p>
   <h2><br /></h2>
   <h2><br /></h2>
-  <h2>
-    <strong
-      style="color: rgb(11, 83, 148); background-color: rgb(255, 255, 255)"
-    >
-      DC 9: Disclosures of Significant Changes In Last 1 Year</strong
-    >
-  </h2>
-  <p style="background-color: rgb(255, 255, 255)">
-    No significant changes have occurred to the services provided to user
-    entities in the last three months preceding the end of the review date.
-  </p>
 </div>
 <div class="ql-tooltip ql-hidden">
   <a class="ql-preview" target="_blank" href="about:blank"></a
