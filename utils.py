@@ -84,15 +84,15 @@ async def check_sections(html_text):
         messages=[
             {
                 "role": "system",
-                "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate or provide information not directly found in the content."
+                "content": "You are an assistant that strictly provides answers based only on the provided prompt and content."
             },
             {
                 "role": "user",
                 "content": (
-                    f"Check the following system description for the presence and quality of sections DC1 to DC9. "
+                    f"Check the following system description for the presence and quality of sections DC 1, DC 2, DC 3, DC 4, DC 5, DC 6, DC 7, DC 8, DC 9. "
                     f"Ensure all sections from DC 1 to DC 9 are present and that all those sections actually contain information"
                     f"Return a list of missing sections and sections with no relevant information. "
-                    f"The reason can be missing section or Information may not be valid and/or complete"
+                    f"The reason can be Section is Missing or Information may not be valid and/or complete"
                     f"Format the JSON response as mistakes: [{{'section': '...', 'reason': '...'}}, {{'section': '...', 'reason': '...'}}]"
                     f"Page content: {html_text}"
                 )
