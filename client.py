@@ -1,6 +1,6 @@
 import requests
 
-url = 'http://161.35.127.137:8000/section_check'
+url = 'http://161.35.127.137:8000/grammar_check'
 html_content = '''
 <div class="ql-editor" data-gramm="false" contenteditable="true">
   <h2>
