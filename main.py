@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 import os        
 from fastapi.middleware.cors import CORSMiddleware  
 from utils import check_company, check_date, check_grammar, check_sections, check_infrastructure
+import re
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -29,10 +30,16 @@ async def root():
     return {"msg": "OK"}
 
 
+def normalize_company_name(name):
+    return re.sub(r'[^a-zA-Z0-9\s]', '', name).lower()
 
 @app.post("/name_check/{company_name}")
 async def name_check( company_name: str, html_text: str = Body(..., media_type="text/html")):
+
+    company_name = normalize_company_name(company_name)
+    
     logging.info(f"Checking Name {company_name}")
+
     response = await check_company(html_text, company_name)
     logging.info(response)
     return  response

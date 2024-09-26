@@ -11,12 +11,10 @@ client = AzureOpenAI(
     azure_deployment=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
 )
 
-def normalize_company_name(name):
-    return re.sub(r'[^a-zA-Z0-9\s]', '', name).lower()
+
 
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
-    company_name = normalize_company_name(company_name)
     print(f"company name {company_name}")
 
     try:
