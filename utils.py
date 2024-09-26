@@ -25,6 +25,7 @@ async def check_company(html_text, company_name):
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
             model="gpt-4o",
+            temperature = 0.3,
             messages=[
             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
             {"role": "user", "content": f"Check if the company mentioned in the following page content matches '{company_name}'. If the company name mentioned does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML) and the reason. Format the response as mistakes : [{{'incorrect_name': '...', 'sentence': '...', 'reason' : '...'}}, {{'incorrect_name': '...', 'sentence': '...', 'reason' : '...'}}]. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}
