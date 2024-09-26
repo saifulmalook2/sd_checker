@@ -39,7 +39,7 @@ async def check_date(html_text, start_date, end_date):
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-            {"role": "user", "content": f"Check if the start date and end date mentioned in the following page content matches 'start date = {start_date} and end date {end_date}'. If any of the dates mentioned do not match, return a list of JSON objects, each containing the incorrect date and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes: [{{'incorrect_date': '...', 'sentence': '...'}}, {{'incorrect_date': '...', 'sentence': '...'}}]. Find all the incorrect dates and append the JSON to the list. Page content: {html_text}"}
+            {"role": "user", "content": f"Check if the start date and end date mentioned in the following page content matches 'start date = {start_date} and end date {end_date}'. If there is a specific start date or end date mentioned in the content check if it matches if it does not match, return a list of JSON objects, each containing the incorrect date and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes: [{{'incorrect_date': '...', 'sentence': '...'}}, {{'incorrect_date': '...', 'sentence': '...'}}]. Find all the incorrect dates and append the JSON to the list. Page content: {html_text}"}
         ],
     )
     response_text = response.choices[0].message.content.strip()
