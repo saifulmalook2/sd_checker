@@ -12,7 +12,7 @@ client = AzureOpenAI(
 
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
-
+    company_name = company_name.replace("," "")
     try:
         html_text = soup.get_text()
 
