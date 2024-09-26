@@ -41,8 +41,6 @@ async def name_check( company_name: str, html_text: str = Body(..., media_type="
 @app.post("/date_check/")
 async def date_check(start_date: str = Query(...), end_date: str = Query(...), html_text: str = Body(..., media_type="text/html")):
     logging.info(f"Checking Date {start_date} {end_date}")
-
-
     response = await check_date(html_text, start_date, end_date)
     return  response
 

@@ -1,6 +1,6 @@
 import requests
 
-url = 'http://161.35.127.137:8000/service_check/Azure'
+url = 'http://161.35.127.137:8000/service_check/?start_date=2024-09-01&end_date=2024-09-26'
 html_content = '''
 <div class="ql-editor" data-gramm="false" contenteditable="true">
   <h2>
