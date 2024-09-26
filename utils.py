@@ -22,8 +22,7 @@ async def check_company(html_text, company_name):
             temperature = 0.2,
             messages=[
             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-            {"role": "user", "content": f"Check if the company mentioned in the following page content matches '{company_name}'. If the company name mentioned does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes : [{{'incorrect_name': '...', 'sentence': '...'}}, {{'incorrect_name': '...', 'sentence': '...'}}]. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}
-            ],
+            {"role": "user", "content": f"Check if the company mentioned in the following page content matches '{company_name}'. If the company name mentioned does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes : [{{'incorrect_name': '...', 'sentence': '...'}}, {{'incorrect_name': '...', 'sentence': '...'}}]. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}            ],
         )
 
         response_text = response.choices[0].message.content.strip()
