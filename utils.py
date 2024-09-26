@@ -38,6 +38,7 @@ async def check_date(html_text, start_date, end_date):
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
+        temperature = 0.2,
         messages=[
             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
             {"role": "user", "content": f"Check if the start date and end date mentioned in the following page content match the given start date = {start_date} and end date = {end_date}. If there is a specific actual start date or end date mentioned in the content and it does not match the given dates, return a list of JSON objects. Each object should contain the incorrect date and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{'incorrect_date': '...', 'sentence': '...'}}]'. Find all the incorrect dates and append each JSON object to the list. Page content: {html_text}"}
@@ -57,6 +58,7 @@ async def check_grammar(html_text):
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
+        temperature = 0.2,
         messages=[
             {
                 "role": "system",
@@ -82,6 +84,7 @@ async def check_sections(html_text):
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
+        temperature = 0.2,
         messages=[
             {
                 "role": "system",
@@ -114,6 +117,7 @@ async def check_infrastructure(html_text, infrastructure_name):
     response = client.chat.completions.create(
         response_format={"type": "json_object"},
         model="gpt-4o",
+        temperature = 0.2,
         messages=[
             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
             {"role": "user", "content": f"Check if the primary infrastructure in cloud mentioned in section 3.1 of the following page content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{'incorrect_name': '...', 'sentence': '...'}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}
