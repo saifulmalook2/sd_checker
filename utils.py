@@ -105,3 +105,21 @@ async def check_sections(html_text):
 
     print(response_text)
     return filtered_response
+
+async def check_infrastructure(html_text, infrastructure_name):
+    soup = BeautifulSoup(html_text, 'html.parser')
+    html_text = soup.get_text()
+
+    response = client.chat.completions.create(
+        response_format={"type": "json_object"},
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
+            {"role": "user", "content": f"Check if the primary infrastructure mentioned in section 3.1 of the following page content matches '{infrastructure_name}'. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{'incorrect_name': '...', 'sentence': '...'}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}"}
+        ]
+    )
+
+    response_text = response.choices[0].message.content.strip()
+    filtered_response = json.loads(response_text)
+    print(filtered_response)
+    return filtered_response
