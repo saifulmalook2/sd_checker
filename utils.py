@@ -13,7 +13,7 @@ client = AzureOpenAI(
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
     try:
-        html_text = soup.get_text()
+        # html_text = soup.get_text()
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
