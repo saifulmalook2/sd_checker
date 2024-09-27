@@ -68,8 +68,9 @@ async def check_grammar(html_text):
         html_text = soup.get_text()
 
         response = client.chat.completions.create(
+            response_format={"type": "json_object"},
             model="gpt-4o",
-            temperature=0.2,
+            temperature = 0.2,
             messages=[
                 {
                     "role": "system",
@@ -77,29 +78,19 @@ async def check_grammar(html_text):
                 },
                 {
                     "role": "user",
-                    "content": f"""Check the following page content for grammatical mistakes/errors (punctuation) and spelling mistakes.
-                    Return a well-formatted JSON object, strictly using double quotes, and format the response as mistakes: 
-                    [{"incorrect_phrase": "...", "reason": "...", "sentence": "..."}]. 
-                    Ensure that the JSON is valid and does not contain any additional text. Page content: {html_text}"""
+                    "content": f"Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes. Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. Format the response as mistakes: [{{'incorrect_phrase': '...', 'reason': '...'}}, {{'incorrect_phrase': '...', 'reason': '...'}}] ((The sentence should be plain text, not HTML)). Page content: {html_text}"
                 }
             ],
         )
         response_text = response.choices[0].message.content.strip()
+        filtered_response = json.loads(response_text)
 
-        # Validate and load the JSON response
-        try:
-            filtered_response = json.loads(response_text)
-        except json.JSONDecodeError as json_err:
-            print("JSON decode error:", json_err)
-            # Optionally, handle malformed JSON by filtering
-            filtered_response = {"mistakes": []}
-        
         print(response_text)
         return filtered_response
-
     except Exception as e:
         print("Error", e)
-        return {"mistakes": []}
+        return {"mistakes" : []}
+
 async def check_sections(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
     try: 
