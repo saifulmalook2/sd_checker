@@ -51,6 +51,7 @@ soup = BeautifulSoup(html_content, 'html.parser')
 
 html_text = soup.get_text()
 
-print(html_text)
+l = html_text.split(" ")
+new = 
 # response = requests.post(url, data=html_content, headers={'Content-Type': 'text/html'})
 # print(response.json())
