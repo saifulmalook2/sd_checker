@@ -28,6 +28,7 @@ async def check_company(html_text, company_name):
             {"role": "user", "content": f'''Check if the company name '{company_name}' is mentioned exactly and completely in the following page content. Consider the name incorrect if any of the following conditions are met: (1) The name is partially mentioned, i.e., missing parts of the company name, (2) The name contains spelling mistakes. If any of these conditions are found, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes : [{{"incorrect_name": "...", "sentence": "..."}}]. Find all the incorrect names and append the JSON to the list. If the name has Ltd, Inc etc those can be ignored. Page content: {html_text}'''}
             ],
         )
+        print(response)
         response_text = response.choices[0].message.content.strip()
         filtered_response = json.loads(response_text)
 
