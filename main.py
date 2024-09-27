@@ -35,6 +35,7 @@ def normalize_company_name(name):
 
 @app.post("/name_check/{company_name}")
 async def name_check( company_name: str, html_text: str = Body(..., media_type="text/html")):
+    logging.info(f"data {html_text}")
 
     company_name = normalize_company_name(company_name)
 
