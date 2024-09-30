@@ -20,7 +20,8 @@ async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
 
     try:
-        html_text = soup.get_text()
+        html_text = extract(soup)
+
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
@@ -51,7 +52,8 @@ async def check_company(html_text, company_name):
 async def check_date(html_text, start_date, end_date):
     soup = BeautifulSoup(html_text, 'html.parser')
     try:    
-        html_text = soup.get_text()
+        html_text = extract(soup)
+
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
@@ -105,7 +107,8 @@ async def check_grammar(html_text):
 async def check_sections(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
     try: 
-        html_text = soup.get_text()
+        html_text = extract(soup)
+
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
@@ -143,7 +146,7 @@ async def check_sections(html_text):
 async def check_infrastructure(html_text, infrastructure_name):
     soup = BeautifulSoup(html_text, 'html.parser')
     try:
-        html_text = soup.get_text()
+        html_text = extract(soup)
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
