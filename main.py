@@ -22,6 +22,7 @@ key = os.getenv("SECRET_KEY")
 KEY = key.encode()
 cipher_suite = Fernet(KEY)
 
+logging.info(f"key {key}")
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -32,6 +33,7 @@ app.add_middleware(
 
 async def verify_request(request: Request):
     headers = request.headers
+    logging.info(f"headers {headers}")
     auth_token = headers.get('Authorization') 
     
     if auth_token:
