@@ -63,7 +63,7 @@ async def check_date(html_text, start_date, end_date):
                 {"role": "user", "content": f'''Check if the start date and end date mentioned in the following page content match the given 
                  start date = {start_date} and end date = {end_date}. If there is a specific actual start date or end date mentioned in the content 
                  and it does not match the given dates, return a list of JSON objects. Each object should contain the incorrect date. If a specific date is not mentioned like the following : 2024-08-11, 11-08-24, 11-08-2024, 11 August 2024, it should not be flagged. 
-                 Format the response as 'mistakes: [{{"incorrect_date": "..."}}]'. 
+                 Format the response as 'mistakes: [{{"incorrect_start_date": "...", "incorrect_end_date": "..."}}]'. 
                  Find all the incorrect dates and append each JSON object to the list. Page content: {html_text}'''}
             ],
         )
