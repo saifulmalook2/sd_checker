@@ -60,8 +60,13 @@ async def check_date(html_text, start_date, end_date):
             temperature = 0.2,
             messages=[
                 {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                {"role": "user", "content": f'''Check if the start date and end date mentioned in the following page content match the given start date = {start_date} and end date = {end_date}. If there is a specific actual start date or end date mentioned in the content and it does not match the given dates, return a list of JSON objects. Each object should contain the incorrect date and the sentence it is mentioned in (The sentence should be plain text, not HTML). If a specific date is not mentioned, it should not be flagged. Format the response as 'mistakes: [{{"incorrect_date": "...", "sentence": "..."}}]'. Find all the incorrect dates and append each JSON object to the list. Page content: {html_text}'''}
-            ],
+                {"role": "user", "content": f'''Check if the start date and end date mentioned in the page content match the given start date: {start_date} and end date: {end_date}. If any specific start or end date is mentioned in the content that does not match the given dates, list them in JSON format. Each JSON object should contain:
+                1. "incorrect_date": the date mentioned in the content that is incorrect,
+                2. "sentence": the plain-text sentence from the content where the date appears.
+
+                Only return dates that are incorrect, and ignore sentences where no date is mentioned. Format the response as 'mistakes: [{{"incorrect_date": "...", "sentence": "..."}}]'. Here is the page content: {html_text}'''
+                }           
+                ],
         )
         response_text = response.choices[0].message.content.strip()
         filtered_response = json.loads(response_text)
