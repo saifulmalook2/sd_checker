@@ -95,7 +95,8 @@ async def check_grammar(html_text):
                     Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}, 
                     {{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}] ((The phrase should be plain text, not HTML)). 
                     The reason should be clear, as to what the problem is and where it is.
-                    Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces. 
+                    Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces.
+                    Proper Nouns such as company names etc should be ignored. 
                     If there is a period at the end of the sentence, do not flag it as an error. 
                     Page content: {html_text}'''
                 }
