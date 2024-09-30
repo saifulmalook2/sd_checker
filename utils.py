@@ -92,8 +92,9 @@ async def check_grammar(html_text):
                     "role": "user",
                     "content": f'''Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes. 
                     Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
-                    Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}, 
-                    {{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}] ((The sentence should be plain text, not HTML)). 
+                    Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "..."}}, 
+                    The reason should be clear, as to what the problem is and where it is.
+                    {{"incorrect_phrase": "...", "reason": "..."}}] ((The phrase should be plain text, not HTML)). 
                     Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces. 
                     If there is a period at the end of the sentence, do not flag it as an error. 
                     Page content: {html_text}'''
@@ -160,7 +161,7 @@ async def check_infrastructure(html_text):
             temperature = 0.2,
             messages=[
                 {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                {"role": "user", "content": f'''Check if the primary infrastructure is mentioned in section 3.1 of the following page content {html_text}. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc. If the infrastructure name/service provider is not mentioned, return a list of JSON object, 'mistakes: [{{"missing_provider": "Service Provider is not mentioned in Section 3.1: Primary Infrastructure"}}]'.'''}
+                {"role": "user", "content": f'''Check if the primary infrastructure is mentioned in section 3.1 of the following page content {html_text}. If the infrastructure name/service provider is not mentioned, return a list of JSON object, 'mistakes: [{{"missing_provider": "Service Provider is not mentioned in Section 3.1: Primary Infrastructure"}}]'.'''}
             ]
         )
 
