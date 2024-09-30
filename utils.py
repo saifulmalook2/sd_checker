@@ -167,6 +167,7 @@ async def check_sections(html_text):
 
 async def check_infrastructure(html_text, infrastructure_name):
     soup = BeautifulSoup(html_text, 'html.parser')
+    infrastructure_name = "Github"
     try:
         html_text = extract(soup)
 
