@@ -92,9 +92,9 @@ async def check_grammar(html_text):
                     "role": "user",
                     "content": f'''Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes. 
                     Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
-                    Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "..."}}, 
+                    Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}, 
+                    {{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}] ((The phrase should be plain text, not HTML)). 
                     The reason should be clear, as to what the problem is and where it is.
-                    {{"incorrect_phrase": "...", "reason": "..."}}] ((The phrase should be plain text, not HTML)). 
                     Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces. 
                     If there is a period at the end of the sentence, do not flag it as an error. 
                     Page content: {html_text}'''
