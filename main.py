@@ -37,7 +37,7 @@ def normalize_company_name(name):
 async def name_check( company_name: str, html_text: str = Body(..., media_type="text/html")):
     company_name = normalize_company_name(company_name)
 
-    logging.info(f"Checking Name {company_name} {html_text}")
+    logging.info(f"Checking Name {company_name}")
 
     response = await check_company(html_text, company_name)
     logging.info(response)
