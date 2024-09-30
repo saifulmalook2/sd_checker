@@ -53,7 +53,7 @@ soup = BeautifulSoup(html_content, 'html.parser')
 
 
 def add_space_to_tags(soup):
-    return ' '.join([element.strip() for element in soup.stripped_strings])
+    return '\n'.join([element.strip() for element in soup.stripped_strings])
 
 # Get the parsed content with spaces
 parsed_text_with_spaces = add_space_to_tags(soup)

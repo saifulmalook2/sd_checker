@@ -12,9 +12,8 @@ client = AzureOpenAI(
 )
 
 def extract(soup):
-    return ' '.join([element.strip() for element in soup.stripped_strings])
+    return '\n'.join([element.strip() for element in soup.stripped_strings])
 
-# Get the parsed content with spaces
 
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
