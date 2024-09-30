@@ -99,7 +99,7 @@ async def check_grammar(html_text):
                     Company names should NOT be flagged as error.
                     Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
                     Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}, 
-                    {{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}] ((The phrase should be plain text, not HTML)). 
+                    {{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}] ((The incorrect_phrase should be plain text and should contain 5-8 words of the sentence, not HTML)). 
                     The reason should be clear, as to what the problem is and where it is.
                     Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces.
                     If there is a period at the end of the sentence, do not flag it as an error. 
