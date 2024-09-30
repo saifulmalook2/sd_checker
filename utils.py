@@ -25,8 +25,15 @@ async def check_company(html_text, company_name):
             temperature = 0.3,
             messages=[
             {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-            {"role": "user", "content": f'''Check if the company name '{company_name}' is mentioned exactly and completely in the following page content. If the company name mentioned in the content does not match this {company_name} then , return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as mistakes : [{{"incorrect_name": "...", "sentence": "..."}}]. Find all the incorrect names and append the JSON to the list. If the name has Ltd, Inc etc those can be ignored. Page content: {html_text}'''}
-            ],
+            {
+                    "role": "user",
+                    "content": (
+                        f"Check the following system description for the name of the Company for which the system description is created"
+                        f"Ensure the name mentioned in the conent is the same as {company_name}"
+                        f"Return a list of incorrect names and misspelled names. "
+                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
+                    )
+                }            ],
         )
         response_text = response.choices[0].message.content.strip()
         filtered_response = json.loads(response_text)
