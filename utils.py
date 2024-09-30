@@ -125,7 +125,7 @@ async def check_sections(html_text):
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
             model="gpt-4o",
-            temperature = 0.2,
+            temperature = 0.1,
             messages=[
                 {
                     "role": "system",
@@ -134,16 +134,17 @@ async def check_sections(html_text):
                 {
                     "role": "user",
                     "content": (
-                        f'''Check the following system description for the presence and quality of the following sections DC 1
-                            DC 2
+                        f'''Check the following system description for the presence and quality of All the following sections 
+                            DC 1,
+                            DC 2,
                             DC 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
-                            DC 4
-                            DC 5
-                            DC 6
-                            DC 7
-                            DC 8
+                            DC 4,
+                            DC 5,
+                            DC 6,
+                            DC 7,
+                            DC 8,
                             DC 9 '''
-                        f"Ensure all sections from DC 1 to DC 9 are present and that all those sections actually contain some information"
+                        f"Ensure all sections from DC 1 to DC 9 mentioned above are present and that all those sections actually contain some information"
                         f"Return a list of missing sections and sections with no information at all. "
                         f"The reason can be Section is Missing or Information may not be valid and/or complete"
                         f'''Format the JSON response as mistakes: [{{"section": "...", "reason": "..."}}, {{"section": "...", "reason": "..."}}]'''
