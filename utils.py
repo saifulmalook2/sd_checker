@@ -12,7 +12,7 @@ client = AzureOpenAI(
 )
 
 def extract(soup):
-    return '\n'.join([element.strip() for element in soup.stripped_strings])
+    return '\n'.join([element.strip().replace('\u25cf', ' ') for element in soup.stripped_strings])
 
 
 async def check_company(html_text, company_name):
