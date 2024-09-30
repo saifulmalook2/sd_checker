@@ -65,6 +65,6 @@ async def section_check( html_text: str = Body(..., media_type="text/html")):
 @app.post("/service_check/{service_name}")
 async def service_check( service_name: str, html_text: str = Body(..., media_type="text/html")):
     logging.info(f"Checking Provider {service_name}")
-    response = await check_infrastructure(html_text)
+    response = await check_infrastructure(html_text, service_name)
     logging.info(response)
     return  response
