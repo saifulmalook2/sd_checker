@@ -91,7 +91,7 @@ async def check_grammar(html_text):
                 {
                     "role": "user",
                     "content": f'''Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes.
-                    Company names etc should not be flagged as error.
+                    Company names should NOT be flagged as error.
                     Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
                     Format the response as mistakes: [{{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}, 
                     {{"incorrect_phrase": "...", "reason": "...", "sentence" : "..."}}] ((The phrase should be plain text, not HTML)). 
@@ -151,7 +151,7 @@ async def check_sections(html_text):
         return {"mistakes" : []}
 
 
-async def check_infrastructure(html_text):
+async def check_infrastructure(html_text, infrastructure_name):
     soup = BeautifulSoup(html_text, 'html.parser')
     try:
         html_text = extract(soup)
@@ -162,7 +162,7 @@ async def check_infrastructure(html_text):
             temperature = 0.2,
             messages=[
                 {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                {"role": "user", "content": f'''Check if the primary infrastructure is mentioned in section 3.1 of the following page content {html_text}. If the infrastructure name/service provider is not mentioned, return a list of JSON object, 'mistakes: [{{"missing_provider": "Service Provider is not mentioned in Section 3.1: Primary Infrastructure"}}]'.'''}
+                {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in section 3.1 of the following page content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}'''}
             ]
         )
 
@@ -173,27 +173,3 @@ async def check_infrastructure(html_text):
     except Exception as e:
         print("Error", e)
         return {"mistakes" : []}
-
-
-# async def check_infrastructure(html_text, infrastructure_name):
-    # soup = BeautifulSoup(html_text, 'html.parser')
-    # try:
-    #     html_text = extract(soup)
-
-    #     response = client.chat.completions.create(
-    #         response_format={"type": "json_object"},
-    #         model="gpt-4o",
-    #         temperature = 0.2,
-    #         messages=[
-    #             {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-    #             {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in section 3.1 of the following page content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}'''}
-    #         ]
-    #     )
-
-    #     response_text = response.choices[0].message.content.strip()
-    #     filtered_response = json.loads(response_text)
-    #     print(filtered_response)
-    #     return filtered_response
-    # except Exception as e:
-    #     print("Error", e)
-    #     return {"mistakes" : []}
