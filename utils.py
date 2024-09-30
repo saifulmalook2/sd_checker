@@ -34,7 +34,7 @@ async def check_company(html_text, company_name):
                         f"Check the following system description for the name of the Company for which the system description is created"
                         f"Ensure the name mentioned in the conent is the same as {company_name}"
                         f"Return a list of incorrect names and misspelled names. "
-                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
+                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
                     )
                 }            
                 ],
@@ -167,7 +167,6 @@ async def check_sections(html_text):
 
 async def check_infrastructure(html_text, infrastructure_name):
     soup = BeautifulSoup(html_text, 'html.parser')
-    infrastructure_name = "Github"
     try:
         html_text = extract(soup)
 
@@ -177,7 +176,7 @@ async def check_infrastructure(html_text, infrastructure_name):
             temperature = 0.2,
             messages=[
                 {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in section 3.1 of the following page content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}'''}
+                {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in Section 3.1 Primary Infrastructure of the following content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_infrastructure": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}'''}
             ]
         )
 
