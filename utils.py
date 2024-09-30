@@ -11,7 +11,10 @@ client = AzureOpenAI(
     azure_deployment=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
 )
 
+def extract(soup):
+    return ' '.join([element.strip() for element in soup.stripped_strings])
 
+# Get the parsed content with spaces
 
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
@@ -72,7 +75,7 @@ async def check_grammar(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
 
     try:
-        html_text = soup.get_text()
+        html_text = extract(soup)
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},

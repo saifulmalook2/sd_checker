@@ -49,9 +49,16 @@ html_content = '''
 
 soup = BeautifulSoup(html_content, 'html.parser')
 
-html_text = soup.get_text()
+# html_text = soup.get_text()
 
-l = html_text.split(" ")
-new = 
+
+def add_space_to_tags(soup):
+    return ' '.join([element.strip() for element in soup.stripped_strings])
+
+# Get the parsed content with spaces
+parsed_text_with_spaces = add_space_to_tags(soup)
+
+print(parsed_text_with_spaces)
+
 # response = requests.post(url, data=html_content, headers={'Content-Type': 'text/html'})
 # print(response.json())
