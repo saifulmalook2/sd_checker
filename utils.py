@@ -106,6 +106,7 @@ async def check_grammar(html_text):
                 }
             ],
         )
+        print("gpt response ", response)
         response_text = response.choices[0].message.content.strip()
         filtered_response = json.loads(response_text)
 
