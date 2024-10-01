@@ -34,7 +34,7 @@ async def check_company(html_text, company_name):
                         f"Check the following system description for the name of the Company for which the system description is created"
                         f"Ensure the name mentioned in the conent is the same as {company_name}"
                         f"Return a list of incorrect names and misspelled names. "
-                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
+                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 8-10 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
                     )
                 }            
                 ],
