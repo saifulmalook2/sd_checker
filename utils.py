@@ -138,7 +138,7 @@ async def check_sections(html_text):
                         f'''Check the following system description for the presence and quality of All the following sections 
                             DC 1,
                             DC 2,
-                            DC 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
+                            DC 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
                             DC 4,
                             DC 5,
                             DC 6,
