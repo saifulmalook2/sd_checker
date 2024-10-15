@@ -14,17 +14,6 @@ client = AzureOpenAI(
 def extract(soup):
     return '\n'.join([element.strip().replace('\u25cf', ' ') for element in soup.stripped_strings])
 
-def split_text(text, max_tokens=120000):
-    chunks = []
-    while len(text) > max_tokens:
-        chunk = text[:max_tokens]
-        last_period = chunk.rfind(".")
-        if last_period != -1:
-            chunk = chunk[:last_period + 1]  # Cut at last sentence end
-        chunks.append(chunk)
-        text = text[len(chunk):]
-    chunks.append(text)  # Add the remaining text
-    return chunks
 
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
@@ -32,15 +21,8 @@ async def check_company(html_text, company_name):
     try:
         html_text = extract(soup)
 
-        # Split the large HTML text into smaller chunks
-        chunks = split_text(html_text)
 
-        all_mistakes = []  # To store all mistakes from each chunk
-
-        for chunk in chunks:
-
-
-            response = client.chat.completions.create(
+        response = client.chat.completions.create(
             response_format={"type": "json_object"},
             model="gpt-4o",
             temperature = 0.3,
@@ -51,21 +33,17 @@ async def check_company(html_text, company_name):
                     "content": (
                         f"Check the following system description for the name of the Company for which the system description is created"
                         f"Ensure the name mentioned in the conent is the same as {company_name}"
-                        f"Return a list of incorrect names and misspelled names. Ignore Pronoun Substitution."
-                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {chunk}'''
+                        f"Return a list of incorrect names and misspelled names. "
+                        f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
                     )
                 }            
                 ],
         )
-            response_text = response.choices[0].message.content.strip()
-            filtered_response = json.loads(response_text)
-            
-            print(filtered_response)
-            if "mistakes" in filtered_response:
-                all_mistakes.extend(filtered_response["mistakes"])
+        response_text = response.choices[0].message.content.strip()
+        filtered_response = json.loads(response_text)
 
-        # Return the combined results
-        return {"mistakes": all_mistakes}
+
+        return filtered_response
     except Exception as e:
         print("Error", e)
         return {"mistakes" : []}
