@@ -78,10 +78,10 @@ async def date_check(start_date: str = Query(...), end_date: str = Query(...), h
     response = await check_date(html_text, start_date, end_date)
     return  response
 
-@app.post("/grammar_check")
-async def grammar_check( html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
+@app.post("/grammar_check/{company_name}")
+async def grammar_check( company_name: str, html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Grammer")
-    response = await check_grammar(html_text)
+    response = await check_grammar(html_text, company_name)
     return  response
 
 @app.post("/section_check")

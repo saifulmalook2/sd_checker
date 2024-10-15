@@ -86,7 +86,7 @@ async def check_date(html_text, start_date, end_date):
         print("Error", e)
         return {"mistakes" : []}
 
-async def check_grammar(html_text):
+async def check_grammar(html_text, company):
     soup = BeautifulSoup(html_text, 'html.parser')
 
     try:
@@ -104,7 +104,7 @@ async def check_grammar(html_text):
                 {
                     "role": "user",
                     "content": f'''Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes.
-                    Company names should NOT be flagged as error.
+                    Company names such as this {company} should NOT be flagged as error.
                     Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
                     Format the response as {{"mistakes": [{{"incorrect_phrase": "...", "reason": "..."}}, 
                     {{"incorrect_phrase": "...", "reason": "..."}}]}} ((The incorrect_phrase should be plain text and should contain 5-8 words of the sentence, not HTML)). 
