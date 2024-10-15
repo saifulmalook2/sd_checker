@@ -72,14 +72,14 @@ async def check_date(html_text, start_date, end_date):
         filtered_response = json.loads(response_text)
 
         print(response_text)
-        result = {"mistakes" : []}
-        mistake_list = []
-        for m in filtered_response["mistakes"]:
-            if m["incorrect_start_date"] != start_date and m["incorrect_end_date"] != end_date:
-                mistake_list.append(m)
-        result["mistakes"] = mistake_list
+        # result = {"mistakes" : []}
+        # mistake_list = []
+        # for m in filtered_response["mistakes"]:
+        #     if m["incorrect_start_date"] != start_date and m["incorrect_end_date"] != end_date:
+        #         mistake_list.append(m)
+        # result["mistakes"] = mistake_list
 
-        print(result)
+        # print(result)
         return filtered_response
     
     except Exception as e:
