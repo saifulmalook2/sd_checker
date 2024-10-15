@@ -111,7 +111,7 @@ async def check_grammar(html_text):
                     The reason should be clear, as to what the problem is and where it is.
                     Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces.
                     If there is a period at the end of the sentence, do not flag it as an error. 
-                    Always verify the JSON content once before giving a response.
+                    Always verify the JSON content twice before giving a response.
                     Page content: {html_text}'''
                 }
             ],
