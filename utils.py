@@ -43,7 +43,7 @@ async def check_company(html_text, company_name):
     try:
         html_text = extract(soup)
 
-        all_mistakes = [] 
+        all_mistakes = {"mistakes" : []} 
 
         chunks = get_chunks(html_text)
 
@@ -68,7 +68,7 @@ async def check_company(html_text, company_name):
             response_text = response.choices[0].message.content.strip()
             filtered_response = json.loads(response_text)
             if "mistakes" in filtered_response:
-                    all_mistakes.extend(filtered_response["mistakes"])
+                    all_mistakes["mistakes"].extend(filtered_response["mistakes"])
 
         return all_mistakes
     
