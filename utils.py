@@ -23,8 +23,8 @@ def get_chunks(text):
     tokens = encoding.encode(text)
     
     print("Number of Tokens:",  len(tokens))
-    max_tokens = 10000
-    if len(tokens) > max_tokens:
+    max_tokens = 20000
+    if len(tokens) < max_tokens:
         print("not split")
         return [text]
     else:
