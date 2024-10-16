@@ -3,6 +3,7 @@ import os
 import json
 from bs4 import BeautifulSoup
 import re
+import tiktoken
 
 client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -15,12 +16,20 @@ def extract(soup):
     return '\n'.join([element.strip().replace('\u25cf', ' ') for element in soup.stripped_strings])
 
 
+encoding = tiktoken.encoding_for_model("gpt-4o")
+
+def get_token_count(text):
+    """Efficiently get the number of tokens for a given text."""
+    tokens = encoding.encode(text)
+    return len(tokens)
+
 async def check_company(html_text, company_name):
     soup = BeautifulSoup(html_text, 'html.parser')
 
     try:
         html_text = extract(soup)
 
+        print("tokens", get_token_count(html_text))
 
         response = client.chat.completions.create(
             response_format={"type": "json_object"},
