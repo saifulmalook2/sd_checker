@@ -92,7 +92,7 @@ async def check_date(html_text, start_date, end_date):
 
         for chunk in chunks:
 
-            response = client.chat.completions.create(
+            response = await client.chat.completions.create(
                 response_format={"type": "json_object"},
                 model="gpt-4o",
                 temperature = 0.2,
@@ -129,7 +129,7 @@ async def check_grammar(html_text, company):
 
         for chunk in chunks:
 
-            response = client.chat.completions.create(
+            response = await client.chat.completions.create(
                 response_format={"type": "json_object"},
                 model="gpt-4o",
                 temperature = 0.2,
@@ -174,7 +174,7 @@ async def check_sections(html_text):
 
         for chunk in chunks:
 
-            response = client.chat.completions.create(
+            response = await client.chat.completions.create(
                 response_format={"type": "json_object"},
                 model="gpt-4o",
                 temperature = 0.1,
@@ -228,13 +228,13 @@ async def check_infrastructure(html_text, infrastructure_name):
 
         for chunk in chunks:
              
-            response = client.chat.completions.create(
+            response = await client.chat.completions.create(
                 response_format={"type": "json_object"},
                 model="gpt-4o",
                 temperature = 0.2,
                 messages=[
                     {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                    {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in Section 3.1 Primary Infrastructure of the following content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_infrastructure": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}'''}
+                    {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in Section 3.1 Primary Infrastructure of the following content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_infrastructure": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {chunk}'''}
                 ]
             )
 
