@@ -25,8 +25,11 @@ def get_chunks(text):
     print("Number of Tokens:",  len(tokens))
     max_tokens = 10000
     if len(tokens) > max_tokens:
+        print("not split")
         return [text]
     else:
+        print("split")
+
         chunks = []
         while len(text) > max_tokens:
             chunk = text[:max_tokens]
