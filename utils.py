@@ -4,6 +4,12 @@ import json
 from bs4 import BeautifulSoup
 import re
 import tiktoken
+import logging
+
+logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
+# hack to get rid of langchain logs
+httpx_logger = logging.getLogger("httpx")
+httpx_logger.setLevel(logging.WARNING)
 
 client = AsyncAzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -45,6 +51,7 @@ async def check_company(sections, company_name):
 
     custom_response = {}
     for section, value in sections.items():
+        logging.info(f"section {section}")
         section_soup =  BeautifulSoup(value, 'html.parser')
 
         try:
@@ -71,7 +78,9 @@ async def check_company(sections, company_name):
                 response_text = response.choices[0].message.content.strip()
                 filtered_response = json.loads(response_text)
 
-            custom_response[section] = filtered_response
+                custom_response[section] = filtered_response
+                logging.info(f"response {custom_response}")
+
 
         except Exception as e:
             print("Error", e)
