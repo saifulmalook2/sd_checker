@@ -50,25 +50,26 @@ async def check_company(sections, company_name):
         try:
             html_text = extract(section_soup)
 
-            response = await client.chat.completions.create(
-                    response_format={"type": "json_object"},
-                    model="gpt-4o",
-                    temperature = 0.3,
-                    messages=[
-                    {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                    {
-                            "role": "user",
-                            "content": (
-                                f"Check the following system description for the name of the Company for which the system description is created"
-                                f"Ensure the name mentioned in the conent is the same as {company_name}"
-                                f"Return a list of incorrect names and misspelled names."
-                                f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
-                            )
-                        }            
-                        ],
-                )
-            response_text = response.choices[0].message.content.strip()
-            filtered_response = json.loads(response_text)
+            if (html_text):
+                response = await client.chat.completions.create(
+                        response_format={"type": "json_object"},
+                        model="gpt-4o",
+                        temperature = 0.3,
+                        messages=[
+                        {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
+                        {
+                                "role": "user",
+                                "content": (
+                                    f"Check the following report content for the name of the Company for which the report content is created. This report is created by the Prescient Security/Assurance Company (Cacilian) for the following company : {company_name}"
+                                    f"Ensure the name mentioned in the conent is the same as {company_name}"
+                                    f"Return a list of incorrect names and misspelled names. Ignore the company 'Prescient Assurance LLC', 'Cacilian LLC', 'Security, 'Prescient Security' "
+                                    f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
+                                )
+                            }            
+                            ],
+                    )
+                response_text = response.choices[0].message.content.strip()
+                filtered_response = json.loads(response_text)
 
             custom_response[section] = filtered_response
 
