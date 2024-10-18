@@ -41,44 +41,44 @@ def get_chunks(text):
         chunks.append(text)  # Add the remaining text
         return chunks
 
-async def check_company(html_text, company_name):
-    soup = BeautifulSoup(html_text, 'html.parser')
+async def check_company(sections, company_name):
 
-    try:
-        html_text = extract(soup)
+    custom_response = {}
+    for section, value in sections.items():
+        section_soup =  BeautifulSoup(value, 'html.parser')
 
-        all_mistakes = {"mistakes" : []} 
+        try:
+            html_text = extract(section_soup)
 
-        chunks = get_chunks(html_text)
-
-        for chunk in chunks:
             response = await client.chat.completions.create(
-                response_format={"type": "json_object"},
-                model="gpt-4o",
-                temperature = 0.3,
-                messages=[
-                {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                {
-                        "role": "user",
-                        "content": (
-                            f"Check the following system description for the name of the Company for which the system description is created"
-                            f"Ensure the name mentioned in the conent is the same as {company_name}"
-                            f"Return a list of incorrect names and misspelled names."
-                            f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {chunk}'''
-                        )
-                    }            
-                    ],
-            )
+                    response_format={"type": "json_object"},
+                    model="gpt-4o",
+                    temperature = 0.3,
+                    messages=[
+                    {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
+                    {
+                            "role": "user",
+                            "content": (
+                                f"Check the following system description for the name of the Company for which the system description is created"
+                                f"Ensure the name mentioned in the conent is the same as {company_name}"
+                                f"Return a list of incorrect names and misspelled names."
+                                f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
+                            )
+                        }            
+                        ],
+                )
             response_text = response.choices[0].message.content.strip()
             filtered_response = json.loads(response_text)
-            if "mistakes" in filtered_response:
-                    all_mistakes["mistakes"].extend(filtered_response["mistakes"])
 
-        return all_mistakes
-    
-    except Exception as e:
-        print("Error", e)
-        return {"mistakes" : []}
+            custom_response[section] = filtered_response
+
+        except Exception as e:
+            print("Error", e)
+            return custom_response
+            
+    return custom_response
+        
+        
 
 async def check_date(html_text, start_date, end_date):
     soup = BeautifulSoup(html_text, 'html.parser')

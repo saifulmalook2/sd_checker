@@ -66,14 +66,14 @@ async def name_check( company_name: str, sections: dict = Body(...)):
     company_name = normalize_company_name(company_name)
 
     logging.info(f"Checking Name {company_name}")
-    logging.info(f"Checking Name {sections}")
+    # logging.info(f"Checking Name {sections}")
 
 
-    # response = await check_company(html_text, company_name)
-    # logging.info(response)
-    # return  response
+    response = await check_company(sections, company_name)
+    logging.info(response)
+    return  response
 
-    return {"Testing": "hello"}
+    # return {"Testing": "hello"}
 
     
 @app.post("/date_check/")
