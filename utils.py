@@ -51,8 +51,6 @@ async def check_company(html_text, company_name):
 
         chunks = get_chunks(html_text)
 
-        print("Chunks:", len(chunks))
-
         for chunk in chunks:
             response = await client.chat.completions.create(
                 response_format={"type": "json_object"},

@@ -62,14 +62,18 @@ def normalize_company_name(name):
     return re.sub(r'[^a-zA-Z0-9\s]', '', name)
 
 @app.post("/name_check/{company_name}")
-async def name_check( company_name: str, html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
+async def name_check( company_name: str, sections : dict):
     company_name = normalize_company_name(company_name)
 
     logging.info(f"Checking Name {company_name}")
+    logging.info(f"Checking Name {sections}")
 
-    response = await check_company(html_text, company_name)
-    logging.info(response)
-    return  response
+
+    # response = await check_company(html_text, company_name)
+    # logging.info(response)
+    # return  response
+
+    return {"Testing": "hello"}
 
     
 @app.post("/date_check/")
