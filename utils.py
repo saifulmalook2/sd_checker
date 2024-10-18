@@ -48,17 +48,13 @@ def get_chunks(text):
         return chunks
 
 async def check_company(sections, company_name):
-
     custom_response = {}
     for section, value in sections.items():
         logging.info(f"section {section}")
         if value:
             section_soup =  BeautifulSoup(value, 'html.parser')
-
             try:
                 html_text = extract(section_soup)
-
-                
                 response = await client.chat.completions.create(
                             response_format={"type": "json_object"},
                             model="gpt-4o",
@@ -69,7 +65,7 @@ async def check_company(sections, company_name):
                                     "role": "user",
                                     "content": (
                                         f"Check the following report content for the name of the Company for which the report content is created. This report is created by the Prescient Security/Assurance Company (Cacilian) for the following company : {company_name}"
-                                        f"Ensure the name mentioned in the conent is the same as {company_name}"
+                                        f"Ensure the name mentioned in the content is the same as {company_name}"
                                         f"Return a list of incorrect names and misspelled names. Ignore the company 'Prescient Assurance LLC', 'Cacilian LLC', 'Security, 'Prescient Security' "
                                         f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
                                     )
@@ -99,11 +95,8 @@ async def check_date(html_text, start_date, end_date):
     try:    
         html_text = extract(soup)
         all_mistakes = {"mistakes" : []} 
-
         chunks = get_chunks(html_text)
-
         for chunk in chunks:
-
             response = await client.chat.completions.create(
                 response_format={"type": "json_object"},
                 model="gpt-4o",
