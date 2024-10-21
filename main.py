@@ -78,24 +78,32 @@ async def name_check( company_name: str, sections: dict = Body(...)):
 @app.post("/date_check/")
 async def date_check(start_date: str = Query(...), end_date: str = Query(...), sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Date {start_date} {end_date}")
+    sections.pop("company_name", None)
+
     response = await check_date(sections, start_date, end_date)
     return  response
 
 @app.post("/grammar_check/{company_name}")
 async def grammar_check( company_name: str, sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Grammer")
+    sections.pop("company_name", None)
+
     response = await check_grammar(sections, company_name)
     return  response
 
 @app.post("/section_check")
 async def section_check( html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Sections")
+    
     response = await check_sections(html_text)
     return  response
 
 @app.post("/service_check/{service_name}")
 async def service_check( service_name: str, sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Provider {service_name}")
+    sections.pop("company_name", None)
+    
+
     response = await check_infrastructure(sections, service_name)
     logging.info(response)
     return  response
