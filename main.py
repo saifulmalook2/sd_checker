@@ -92,10 +92,11 @@ async def grammar_check( company_name: str, sections: dict = Body(...), headers:
     return  response
 
 @app.post("/section_check")
-async def section_check( html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
+async def section_check( sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Sections")
+    sections.pop("company_name", None)
     
-    response = await check_sections(html_text)
+    response = await check_sections(sections)
     return  response
 
 @app.post("/service_check/{service_name}")

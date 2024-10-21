@@ -174,58 +174,60 @@ async def check_grammar(sections, company):
     return custom_response
           
 
-async def check_sections(html_text):
-    soup = BeautifulSoup(html_text, 'html.parser')
-    try: 
-        html_text = extract(soup)
-        all_mistakes = {"mistakes" : []} 
+async def check_sections(sections):
+    custom_response = {}
+    for section, value in sections.items():
+        logging.info(f"section {section}")
+        if value:
+            section_soup =  BeautifulSoup(value, 'html.parser')
+            try:
+                html_text = extract(section_soup)
 
-        chunks = get_chunks(html_text)
+                response = await client.chat.completions.create(
+                    response_format={"type": "json_object"},
+                    model="gpt-4o",
+                    temperature = 0.1,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are an assistant that strictly provides answers based only on the provided prompt and content."
+                        },
+                        {
+                            "role": "user",
+                            "content": (
+                                f'''Check the following system description for the presence and quality of All the following sections 
+                                    DC 1,
+                                    DC 2,
+                                    DC 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
+                                    DC 4,
+                                    DC 5,
+                                    DC 6,
+                                    DC 7,
+                                    DC 8,
+                                    DC 9 '''
+                                f"Ensure all sections from DC 1 to DC 9 mentioned above are present and that all those sections actually contain some information"
+                                f"Return a list of missing sections and sections with no information at all. "
+                                f"The reason can be Section is Missing or Information may not be valid and/or complete"
+                                f'''Format the JSON response as mistakes: [{{"section": "...", "reason": "..."}}, {{"section": "...", "reason": "..."}}]'''
+                                f"Page content: {html_text}"
+                            )
+                        }
+                    ],
+                )
+                
+                response_text = response.choices[0].message.content.strip()
+                filtered_response = json.loads(response_text)
+                custom_response[section] = filtered_response
+                logging.info(f"response {custom_response}")
 
-        for chunk in chunks:
 
-            response = await client.chat.completions.create(
-                response_format={"type": "json_object"},
-                model="gpt-4o",
-                temperature = 0.1,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an assistant that strictly provides answers based only on the provided prompt and content."
-                    },
-                    {
-                        "role": "user",
-                        "content": (
-                            f'''Check the following system description for the presence and quality of All the following sections 
-                                DC 1,
-                                DC 2,
-                                DC 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
-                                DC 4,
-                                DC 5,
-                                DC 6,
-                                DC 7,
-                                DC 8,
-                                DC 9 '''
-                            f"Ensure all sections from DC 1 to DC 9 mentioned above are present and that all those sections actually contain some information"
-                            f"Return a list of missing sections and sections with no information at all. "
-                            f"The reason can be Section is Missing or Information may not be valid and/or complete"
-                            f'''Format the JSON response as mistakes: [{{"section": "...", "reason": "..."}}, {{"section": "...", "reason": "..."}}]'''
-                            f"Page content: {chunk}"
-                        )
-                    }
-                ],
-            )
-            
-            response_text = response.choices[0].message.content.strip()
-            filtered_response = json.loads(response_text)
-            if "mistakes" in filtered_response:
-                    all_mistakes["mistakes"].extend(filtered_response["mistakes"])
-
-        return all_mistakes
-    
-    except Exception as e:
-        print("Error", e)
-        return {"mistakes" : []}
+            except Exception as e:
+                print("Error", e)
+                return custom_response
+        else:
+            custom_response[section] = []
+    return custom_response
+          
 
 
 async def check_infrastructure(sections, infrastructure_name):
