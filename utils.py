@@ -58,7 +58,7 @@ async def check_company(sections, company_name):
                 response = await client.chat.completions.create(
                             response_format={"type": "json_object"},
                             model="gpt-4o",
-                            temperature = 0.3,
+                            temperature = 0.1,
                             messages=[
                             {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
                             {
@@ -90,84 +90,89 @@ async def check_company(sections, company_name):
         
         
 
-async def check_date(html_text, start_date, end_date):
-    soup = BeautifulSoup(html_text, 'html.parser')
-    try:    
-        html_text = extract(soup)
-        all_mistakes = {"mistakes" : []} 
-        chunks = get_chunks(html_text)
-        for chunk in chunks:
-            response = await client.chat.completions.create(
-                response_format={"type": "json_object"},
-                model="gpt-4o",
-                temperature = 0.2,
-                messages=[
-                    {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                    {"role": "user", "content": f'''Check if the start date and end date mentioned in the following page content match the given 
-                    start date = {start_date} and end date = {end_date}, the Date Format may be different. If there is a specific actual start date or end date mentioned in the content 
-                    and it does not match the given dates, return a list of JSON objects. Each object should contain the incorrect date. If a specific date is not mentioned like the following : 2024-08-11, 11-08-24, 11-08-2024, 08-11-2024, 11 August 2024, it should not be flagged. 
-                    Format the response as 'mistakes: [{{"incorrect_start_date": "...", "incorrect_end_date": "..."}}]'. 
-                    If no dates are mentioned in the content then return an empty list.
-                    Find all the incorrect dates and append each JSON object to the list. Page content: {chunk}'''}
-                ],
-            )
-            response_text = response.choices[0].message.content.strip()
-            filtered_response = json.loads(response_text)
+async def check_date(sections, start_date, end_date):
+    custom_response = {}
+    for section, value in sections.items():
+        logging.info(f"section {section}")
+        if value:
+            section_soup =  BeautifulSoup(value, 'html.parser')
+            try:
+                html_text = extract(section_soup)
+                response = await client.chat.completions.create(
+                    response_format={"type": "json_object"},
+                    model="gpt-4o",
+                    temperature = 0.2,
+                    messages=[
+                        {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
+                        {"role": "user", "content": f'''Check if the start date and end date mentioned in the following page content match the given 
+                        start date = {start_date} and end date = {end_date}, the Date Format may be different. If there is a specific actual start date or end date mentioned in the content 
+                        and it does not match the given dates, return a list of JSON objects. Each object should contain the incorrect date. If a specific date is not mentioned like the following : 2024-08-11, 11-08-24, 11-08-2024, 08-11-2024, 11 August 2024, it should not be flagged. 
+                        Format the response as 'mistakes: [{{"incorrect_start_date": "...", "incorrect_end_date": "..."}}]'. 
+                        If no dates are mentioned in the content then return an empty list.
+                        Find all the incorrect dates and append each JSON object to the list. Page content: {html_text}'''}
+                    ],
+                )
+                response_text = response.choices[0].message.content.strip()
+                filtered_response = json.loads(response_text)
+                custom_response[section] = filtered_response
+                logging.info(f"response {custom_response}")
 
-            if "mistakes" in filtered_response:
-                    all_mistakes["mistakes"].extend(filtered_response["mistakes"])
 
-        return all_mistakes
-    
-    except Exception as e:
-        print("Error", e)
-        return {"mistakes" : []}
+            except Exception as e:
+                print("Error", e)
+                return custom_response
+        else:
+            custom_response[section] = []
+             
+            
+    return custom_response
 
-async def check_grammar(html_text, company):
-    soup = BeautifulSoup(html_text, 'html.parser')
+async def check_grammar(sections, company):
+    custom_response = {}
+    for section, value in sections.items():
+        logging.info(f"section {section}")
+        if value:
+            section_soup =  BeautifulSoup(value, 'html.parser')
+            try:
+                html_text = extract(section_soup)
 
-    try:
-        html_text = extract(soup)
-        all_mistakes = {"mistakes" : []} 
+                response = await client.chat.completions.create(
+                    response_format={"type": "json_object"},
+                    model="gpt-4o",
+                    temperature = 0.2,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."
+                        },
+                        {
+                            "role": "user",
+                            "content": f'''Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes.
+                            Company names such as this {company} should NOT be flagged as error.
+                            Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
+                            Format the response as {{"mistakes": [{{"incorrect_phrase": "...", "reason": "..."}}, 
+                            {{"incorrect_phrase": "...", "reason": "..."}}]}} ((The incorrect_phrase should be plain text and should contain 5-8 words of the sentence, not HTML)). 
+                            The reason should be clear, as to what the problem is and where it is.
+                            Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces.
+                            If there is a period at the end of the sentence, do not flag it as an error. 
+                            Always verify the JSON content twice before giving a response.
+                            Page content: {html_text}'''
+                        }
+                    ],
+                )
+                response_text = response.choices[0].message.content.strip()
+                filtered_response = json.loads(response_text)
+                custom_response[section] = filtered_response
+                logging.info(f"response {custom_response}")
 
-        chunks = get_chunks(html_text)
 
-        for chunk in chunks:
-
-            response = await client.chat.completions.create(
-                response_format={"type": "json_object"},
-                model="gpt-4o",
-                temperature = 0.2,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."
-                    },
-                    {
-                        "role": "user",
-                        "content": f'''Check the following page content for grammatical mistakes/errors (punctuation) and spelling Mistakes.
-                        Company names such as this {company} should NOT be flagged as error.
-                        Return a list of JSON objects, each containing the incorrect phrase, what the mistake is, and its corresponding sentence. 
-                        Format the response as {{"mistakes": [{{"incorrect_phrase": "...", "reason": "..."}}, 
-                        {{"incorrect_phrase": "...", "reason": "..."}}]}} ((The incorrect_phrase should be plain text and should contain 5-8 words of the sentence, not HTML)). 
-                        The reason should be clear, as to what the problem is and where it is.
-                        Only return actual errors such as: spelling, punctuation (missing commas, periods, etc.), and missing spaces.
-                        If there is a period at the end of the sentence, do not flag it as an error. 
-                        Always verify the JSON content twice before giving a response.
-                        Page content: {chunk}'''
-                    }
-                ],
-            )
-            response_text = response.choices[0].message.content.strip()
-            filtered_response = json.loads(response_text)
-            if "mistakes" in filtered_response:
-                    all_mistakes["mistakes"].extend(filtered_response["mistakes"])
-
-        return all_mistakes
-    
-    except Exception as e:
-        print("Error", e)
-        return {"mistakes" : []}
+            except Exception as e:
+                print("Error", e)
+                return custom_response
+        else:
+            custom_response[section] = []
+    return custom_response
+          
 
 async def check_sections(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
@@ -223,32 +228,34 @@ async def check_sections(html_text):
         return {"mistakes" : []}
 
 
-async def check_infrastructure(html_text, infrastructure_name):
-    soup = BeautifulSoup(html_text, 'html.parser')
-    try:
-        html_text = extract(soup)
-        all_mistakes = {"mistakes" : []} 
-
-        chunks = get_chunks(html_text)
-
-        for chunk in chunks:
+async def check_infrastructure(sections, infrastructure_name):
+    custom_response = {}
+    for section, value in sections.items():
+        logging.info(f"section {section}")
+        if value:
+            section_soup =  BeautifulSoup(value, 'html.parser')
+            try:
+                html_text = extract(section_soup)
              
-            response = await client.chat.completions.create(
-                response_format={"type": "json_object"},
-                model="gpt-4o",
-                temperature = 0.2,
-                messages=[
-                    {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
-                    {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in Section 3.1 Primary Infrastructure of the following content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_infrastructure": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {chunk}'''}
-                ]
-            )
+                response = await client.chat.completions.create(
+                    response_format={"type": "json_object"},
+                    model="gpt-4o",
+                    temperature = 0.2,
+                    messages=[
+                        {"role": "system", "content": "You are an assistant that strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
+                        {"role": "user", "content": f'''Check if the primary infrastructure in cloud mentioned in  the following report content matches '{infrastructure_name}'. Some examples of primary infrastructures in cloud are AWS, Azure, GCP etc, so just try to look for cloud service providers such as those. If the infrastructure name does not match, return a list of JSON objects, each containing the incorrect infrastructure name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_infrastructure": "...", "sentence": "..."}}]'. Find all the incorrect names and append the JSON to the list. Page content: {html_text}'''}
+                    ]
+                )
 
-            response_text = response.choices[0].message.content.strip()
-            filtered_response = json.loads(response_text)
-            if "mistakes" in filtered_response:
-                    all_mistakes["mistakes"].extend(filtered_response["mistakes"])
+                response_text = response.choices[0].message.content.strip()
+                filtered_response = json.loads(response_text)
+                custom_response[section] = filtered_response
+                logging.info(f"response {custom_response}")
 
-        return all_mistakes
-    except Exception as e:
-        print("Error", e)
-        return {"mistakes" : []}
+
+            except Exception as e:
+                print("Error", e)
+                return custom_response
+        else:
+            custom_response[section] = []
+    return custom_response

@@ -63,29 +63,28 @@ def normalize_company_name(name):
 
 @app.post("/name_check/{company_name}")
 async def name_check( company_name: str, sections: dict = Body(...)):
+    sections.pop("company_name", None)
+
     company_name = normalize_company_name(company_name)
 
     logging.info(f"Checking Name {company_name}")
-    # logging.info(f"Checking Name {sections}")
-
 
     response = await check_company(sections, company_name)
     logging.info(response)
     return  response
 
-    # return {"Testing": "hello"}
 
     
 @app.post("/date_check/")
-async def date_check(start_date: str = Query(...), end_date: str = Query(...), html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
+async def date_check(start_date: str = Query(...), end_date: str = Query(...), sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Date {start_date} {end_date}")
-    response = await check_date(html_text, start_date, end_date)
+    response = await check_date(sections, start_date, end_date)
     return  response
 
 @app.post("/grammar_check/{company_name}")
-async def grammar_check( company_name: str, html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
+async def grammar_check( company_name: str, sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Grammer")
-    response = await check_grammar(html_text, company_name)
+    response = await check_grammar(sections, company_name)
     return  response
 
 @app.post("/section_check")
@@ -95,8 +94,8 @@ async def section_check( html_text: str = Body(..., media_type="text/html"), hea
     return  response
 
 @app.post("/service_check/{service_name}")
-async def service_check( service_name: str, html_text: str = Body(..., media_type="text/html"), headers: dict = Depends(verify_request)):
+async def service_check( service_name: str, sections: dict = Body(...), headers: dict = Depends(verify_request)):
     logging.info(f"Checking Provider {service_name}")
-    response = await check_infrastructure(html_text, service_name)
+    response = await check_infrastructure(sections, service_name)
     logging.info(response)
     return  response
