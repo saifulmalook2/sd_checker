@@ -58,14 +58,14 @@ async def check_company(sections, company_name):
                 response = await client.chat.completions.create(
                             response_format={"type": "json_object"},
                             model="gpt-4o",
-                            temperature = 0.1,
+                            temperature = 0.5,
                             messages=[
                             {"role": "system", "content": "You are an assistant that matches text and strictly provides answers based only on the provided content. Do not speculate, hallucinate, or provide information not directly found in the content."},
                             {
                                     "role": "user",
                                     "content": (
                                         f"Check the following report content for the name of the Company for which the report content is created. This report is created by the Prescient Security/Assurance Company (Cacilian) for the following company : {company_name}"
-                                        f"Ensure the name mentioned in the content is the same as {company_name}"
+                                        f"Ensure the name mentioned in the content is the same as {company_name}, the correct company name is {company_name} for which the report was created."
                                         f"Return a list of incorrect names and misspelled names. Ignore the company 'Prescient Assurance LLC', 'Cacilian LLC', 'Security, 'Prescient Security' "
                                         f'''if the company name does not match, return a list of JSON objects, each containing the incorrect company name and the sentence it is mentioned in (The sentence should be plain text, not HTML). Format the response as 'mistakes: [{{"incorrect_company_name": "...", "sentence": "..."}}]'. The sentence should be 10-15 words at maximum. Find all the incorrect names and append the JSON to the list. content : {html_text}'''
                                     )
