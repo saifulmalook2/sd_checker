@@ -11,6 +11,7 @@ from utils import check_company, check_date, check_grammar, check_sections, chec
 from desc_helpers import process_file, verify_control
 import re
 from cryptography.fernet import Fernet
+import requests
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -122,31 +123,42 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
 @app.post("/get_desc/{client_id}")
 async def get_desc(
     client_id: str,
-    evidence_files: List[UploadFile] = File(...),
-    policy_files: List[UploadFile] = File(...),
+    evidence_urls: List[str] = Form(...),  # Change evidence_files to evidence_urls
+    policy_urls: List[str] = Form(...),    # Change policy_files to policy_urls
     name: str = Form(...),
     description: str = Form(...),
     start_date: str = Form(...),
     end_date: str = Form(...)
-
 ):
     saved_files = []
 
-    # Process and download evidence files
-    for evidence_file in evidence_files:
-        filename_with_client_id = f"{client_id}_evidence_{evidence_file.filename}"
+    # Download and save evidence files from URLs
+    for evidence_url in evidence_urls:
+        filename_with_client_id = f"{client_id}_evidence_{os.path.basename(evidence_url)}"
         file_path = os.path.join("docs", filename_with_client_id)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(evidence_file.file, buffer)
-        saved_files.append(filename_with_client_id)
 
-    # Process and download policy files
-    for policy_file in policy_files:
-        filename_with_client_id = f"{client_id}_policy_{policy_file.filename}"
+        # Download the file from the URL
+        response = requests.get(evidence_url, stream=True)
+        if response.status_code == 200:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(response.raw, buffer)
+            saved_files.append(filename_with_client_id)
+        else:
+            return {"error": f"Failed to download evidence file from {evidence_url}"}
+
+    # Download and save policy files from URLs
+    for policy_url in policy_urls:
+        filename_with_client_id = f"{client_id}_policy_{os.path.basename(policy_url)}"
         file_path = os.path.join("docs", filename_with_client_id)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(policy_file.file, buffer)
-        saved_files.append(filename_with_client_id)
+
+        # Download the file from the URL
+        response = requests.get(policy_url, stream=True)
+        if response.status_code == 200:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(response.raw, buffer)
+            saved_files.append(filename_with_client_id)
+        else:
+            return {"error": f"Failed to download policy file from {policy_url}"}
 
     contents = await process_file(saved_files)
 
