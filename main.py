@@ -128,7 +128,7 @@ async def get_desc(
 
     # Process and download evidence files
     for evidence_file in evidence_files:
-        filename_with_client_id = f"{client_id}_{evidence_file.filename}"
+        filename_with_client_id = f"{client_id}_evidence_{evidence_file.filename}"
         file_path = os.path.join("docs", filename_with_client_id)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(evidence_file.file, buffer)
@@ -136,7 +136,7 @@ async def get_desc(
 
     # Process and download policy files
     for policy_file in policy_files:
-        filename_with_client_id = f"{client_id}_{policy_file.filename}"
+        filename_with_client_id = f"{client_id}_policy_{policy_file.filename}"
         file_path = os.path.join("docs", filename_with_client_id)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(policy_file.file, buffer)
