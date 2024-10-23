@@ -8,3 +8,6 @@ tiktoken
 langchain-community
 pandas
 python-docx
+openpyxl
+python-multipart
+pypdf

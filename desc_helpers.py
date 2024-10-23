@@ -137,15 +137,17 @@ async def verify_control(contents, control,start_date, end_date):
             {
                 "role": "user",
                 "content": (
-                    f"Please evaluate the following file contents in relation to the specified control: '{control}'. "
+                    f"Please evaluate the following file contents in relation to the specified control: '{control}', if the control requires a time range for the evidence provided then also confirm that the evidence fall with the following start date = {start_date} and end date = {end_date}. "
                     f"Your task is to determine whether the evidence provided demonstrates compliance with the requirements of this control. "
                     f"Carefully analyze the content for relevant policies, procedures, or documentation that would indicate adherence to the control. "
+                    f"Some controls do not require any evidence, they can be satisfied solely by the policy files "
                     f"In your response, provide a JSON object structured as follows: "
                     f"{{ 'message': '...', 'reason': '...' }}. "
                     f"1. If the control is satisfied, clearly state that it is satisfied and provide a detailed reason explaining how the evidence supports compliance. "
                     f"2. If the control is not satisfied, indicate that it is not satisfied and provide a specific reason outlining the deficiencies or lack of evidence related to the control requirements. "
                     f"3. The message and the reason should be 2-3 sentences each, covering the details and specfic information that was used to come to the conclusion regarding the evidence."
                     f"Make sure your analysis is thorough and directly linked to the content provided. "
+                    f"The content I am providing with be filenames (which can be a policy file or an evidence file), with their respective text content."
                     f"Content: {contents}"
                 ),
             },
