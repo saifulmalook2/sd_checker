@@ -6,6 +6,12 @@ import re
 import tiktoken
 import logging
 
+
+os.environ["AZURE_OPENAI_API_VERSION"]="2024-02-15-preview"
+os.environ["AZURE_OPENAI_DEPLOYMENT"]="prescientassurance"
+os.environ["AZURE_OPENAI_API_KEY"]="e60e6f67ae3a444a90ed6e0341d8258a"
+os.environ["AZURE_OPENAI_ENDPOINT"]="https://prescientassurance.openai.azure.com/"
+
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
 httpx_logger = logging.getLogger("httpx")

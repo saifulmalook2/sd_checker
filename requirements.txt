@@ -5,3 +5,6 @@ openai
 beautifulsoup4
 cryptography
 tiktoken
+langchain-community
+pandas
+python-docx

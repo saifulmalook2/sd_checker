@@ -1,15 +1,16 @@
 
 import logging
-from fastapi import FastAPI, Depends, Form, Body, Query, HTTPException, Request
+from fastapi import FastAPI, Depends, Form, Body, Query, HTTPException, Request,  UploadFile, File, Depends
 from typing import List
 from pydantic import BaseModel
+import shutil
 from fastapi.encoders import jsonable_encoder 
 import os        
 from fastapi.middleware.cors import CORSMiddleware  
 from utils import check_company, check_date, check_grammar, check_sections, check_infrastructure
+from desc_helpers import process_file, verify_control
 import re
 from cryptography.fernet import Fernet
-
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -108,3 +109,41 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
     response = await check_infrastructure(sections, service_name)
     logging.info(response)
     return  response
+
+
+
+
+@app.post("/get_desc/{client_id}")
+async def get_desc(
+    client_id: str,
+    evidence_files: List[UploadFile] = File(...),
+    policy_files: List[UploadFile] = File(...),
+    name: str = Form(...),
+    description: str = Form(...),
+    start_date: str = Form(...),
+    end_date: str = Form(...)
+
+):
+    saved_files = []
+
+    # Process and download evidence files
+    for evidence_file in evidence_files:
+        filename_with_client_id = f"{client_id}_{evidence_file.filename}"
+        file_path = os.path.join("docs", filename_with_client_id)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(evidence_file.file, buffer)
+        saved_files.append(filename_with_client_id)
+
+    # Process and download policy files
+    for policy_file in policy_files:
+        filename_with_client_id = f"{client_id}_{policy_file.filename}"
+        file_path = os.path.join("docs", filename_with_client_id)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(policy_file.file, buffer)
+        saved_files.append(filename_with_client_id)
+
+    contents = await process_file(saved_files)
+
+    ai_response = await verify_control(contents, description, start_date, end_date)
+
+    return ai_response
