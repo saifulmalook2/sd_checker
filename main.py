@@ -19,6 +19,12 @@ httpx_logger.setLevel(logging.WARNING)
 
 app = FastAPI()
 
+
+UPLOAD_DIRECTORY = "docs"  # Make sure this directory exists
+
+# Create the upload directory if it doesn't exist
+os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
+
 key = os.getenv("SECRET_KEY")
 KEY = key.encode()
 cipher_suite = Fernet(KEY)
