@@ -11,7 +11,7 @@ python-docx
 openpyxl
 python-multipart
 pypdf
-google-auth 
-google-auth-oauthlib 
-google-auth-httplib2 
-googleapiclient
+google-api-python-client    
+google-auth                  
+google-auth-httplib2         
+google-auth-oauthlib      
