@@ -12,6 +12,10 @@ from desc_helpers import process_file, verify_control, get_drive_service, downlo
 import re
 from cryptography.fernet import Fernet
 import requests
+from googleapiclient.discovery import build
+from oauth2client.service_account import ServiceAccountCredentials
+from googleapiclient.http import MediaIoBaseDownload
+import io
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -118,8 +122,30 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
     return  response
 
 
+SCOPES = ['https://www.googleapis.com/auth/drive']
 
-drive_service = get_drive_service()
+# Path to your service account JSON key file
+SERVICE_ACCOUNT_FILE = 'gdrive_sample.json'
+
+# Function to create a Google Drive service instance
+def create_drive_service():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+    return service
+
+drive_service = create_drive_service()
+
+    # Helper function to download files from Google Drive
+def download_file_from_google_drive(file_id, filename_with_client_id):
+    file_path = os.path.join("docs", filename_with_client_id)
+    request = drive_service.files().get_media(fileId=file_id)
+    fh = io.FileIO(file_path, 'wb')
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+
+    return file_path
 
 
 @app.post("/get_desc/{client_id}")
@@ -135,25 +161,19 @@ async def get_desc(
     saved_files = []
 
     try:
-
-        # Process and download evidence files using Google Drive API
+        # Process and download evidence files from URLs
         for evidence_url in evidence_urls:
-            file_id = extract_google_drive_file_id(evidence_url)  
-            filename_with_client_id = f"{client_id}_evidence_{file_id}.pdf"  
-            file_path = os.path.join("docs", filename_with_client_id)
-            
-            # Download the file from Google Drive
-            download_file_from_drive(drive_service, file_id, file_path)
-            saved_files.append(filename_with_client_id)
+            file_id = evidence_url.split('/')[-2]  # Extract file ID from the Google Drive URL
+            filename_with_client_id = f"{client_id}_evidence_{file_id}"
+            file_path = download_file_from_google_drive(file_id, filename_with_client_id)
+            saved_files.append(file_path)
 
+        # Process and download policy files from URLs
         for policy_url in policy_urls:
-            file_id = extract_google_drive_file_id(policy_url)
-            filename_with_client_id = f"{client_id}_policy_{file_id}.pdf"
-            file_path = os.path.join("docs", filename_with_client_id)
-
-            # Download the file from Google Drive
-            download_file_from_drive(drive_service, file_id, file_path)
-            saved_files.append(filename_with_client_id)
+            file_id = policy_url.split('/')[-2]  # Extract file ID from the Google Drive URL
+            filename_with_client_id = f"{client_id}_policy_{file_id}"
+            file_path = download_file_from_google_drive(file_id, filename_with_client_id)
+            saved_files.append(file_path)
 
         contents = await process_file(saved_files)
 
