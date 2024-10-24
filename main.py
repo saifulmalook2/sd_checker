@@ -138,6 +138,7 @@ async def get_desc(
 ):
     saved_files = []
 
+    logging.info(f"evidence {evidence_urls}")
     # Process and download evidence files from URLs
     for evidence_url in evidence_urls:
         filename = os.path.basename(evidence_url)  # Extract filename from URL
