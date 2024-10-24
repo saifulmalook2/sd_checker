@@ -144,7 +144,7 @@ async def get_desc(
         filename = os.path.basename(evidence_url)  # Extract filename from URL
         filename_with_client_id = f"{client_id}_evidence_{filename}"
         file_path = os.path.join("docs", filename_with_client_id)
-        await download_file(evidence_url, file_path)
+        await download_file(f"https://dev.prescientaudit.com/{evidence_url}", file_path)
         saved_files.append(filename_with_client_id)
 
     # Process and download policy files from URLs
@@ -152,7 +152,7 @@ async def get_desc(
         filename = os.path.basename(policy_url)  # Extract filename from URL
         filename_with_client_id = f"{client_id}_policy_{filename}"
         file_path = os.path.join("docs", filename_with_client_id)
-        await download_file(policy_url, file_path)
+        await download_file(f"https://dev.prescientaudit.com/{policy_url}", file_path)
         saved_files.append(filename_with_client_id)
 
     logging.info(f"the list of urls {saved_files}")
