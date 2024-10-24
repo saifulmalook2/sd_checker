@@ -75,6 +75,7 @@ async def process_file(filenames):
     try:
         all_documents = {}
 
+        logging.info(f"filename {filenames}")
         # File path where the docs are stored
         files = os.path.join(os.getcwd(), "docs")
 
