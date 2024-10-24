@@ -125,7 +125,7 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 # Path to your service account JSON key file
-SERVICE_ACCOUNT_FILE = '1212gdrive_sample.json'
+SERVICE_ACCOUNT_FILE = 'gdrive_sample.json'
 
 # Function to create a Google Drive service instance
 def create_drive_service():
@@ -164,8 +164,11 @@ async def get_desc(
         # Process and download evidence files from URLs
         for evidence_url in evidence_urls:
             file_id = evidence_url.split('/')[-2]  # Extract file ID from the Google Drive URL
+            logging.info(f"the file id {file_id}")
             filename_with_client_id = f"{client_id}_evidence_{file_id}"
             file_path = download_file_from_google_drive(file_id, filename_with_client_id)
+            logging.info(f"the file path {file_path}")
+
             saved_files.append(file_path)
 
         # Process and download policy files from URLs
