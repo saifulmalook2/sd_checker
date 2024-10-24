@@ -129,8 +129,8 @@ async def download_file(url: str, file_path: str):
 @app.post("/get_desc/{client_id}")
 async def get_desc(
     client_id: str,
-    evidence_urls: List[str] = Form(...),
-    policy_urls: List[str] = Form(...),
+    evidence_urls: List[str] = Form(default=[]),  
+    policy_urls: List[str] = Form(default=[]),
     name: str = Form(...),
     description: str = Form(...),
     start_date: str = Form(...),
