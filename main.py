@@ -11,6 +11,7 @@ from utils import check_company, check_date, check_grammar, check_sections, chec
 from desc_helpers import process_file, verify_control
 import re
 from cryptography.fernet import Fernet
+import hhtpx
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -118,35 +119,42 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
 
 
 
+async def download_file(url: str, file_path: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        response.raise_for_status()  # Ensure we got a valid response
+        with open(file_path, "wb") as f:
+            f.write(response.content)
 
 @app.post("/get_desc/{client_id}")
 async def get_desc(
     client_id: str,
-    evidence_files: List[UploadFile] = File(...),
-    policy_files: List[UploadFile] = File(...),
+    evidence_urls: List[str] = Form(...),
+    policy_urls: List[str] = Form(...),
     name: str = Form(...),
     description: str = Form(...),
     start_date: str = Form(...),
-    end_date: str = Form(...)
-
+    end_date: str = Form(...),
 ):
     saved_files = []
 
-    # Process and download evidence files
-    for evidence_file in evidence_files:
-        filename_with_client_id = f"{client_id}_evidence_{evidence_file.filename}"
+    # Process and download evidence files from URLs
+    for evidence_url in evidence_urls:
+        filename = os.path.basename(evidence_url)  # Extract filename from URL
+        filename_with_client_id = f"{client_id}_evidence_{filename}"
         file_path = os.path.join("docs", filename_with_client_id)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(evidence_file.file, buffer)
+        await download_file(evidence_url, file_path)
         saved_files.append(filename_with_client_id)
 
-    # Process and download policy files
-    for policy_file in policy_files:
-        filename_with_client_id = f"{client_id}_policy_{policy_file.filename}"
+    # Process and download policy files from URLs
+    for policy_url in policy_urls:
+        filename = os.path.basename(policy_url)  # Extract filename from URL
+        filename_with_client_id = f"{client_id}_policy_{filename}"
         file_path = os.path.join("docs", filename_with_client_id)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(policy_file.file, buffer)
+        await download_file(policy_url, file_path)
         saved_files.append(filename_with_client_id)
+
+    logging.info(f"the list of urls {saved_files}")
 
     contents = await process_file(saved_files)
 
