@@ -11,7 +11,7 @@ from utils import check_company, check_date, check_grammar, check_sections, chec
 from desc_helpers import process_file, verify_control
 import re
 from cryptography.fernet import Fernet
-import hhtpx
+import httpx
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
