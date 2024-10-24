@@ -168,17 +168,17 @@ async def get_desc(
             file_id = evidence_url.split('/')[-2]  # Extract file ID from the Google Drive URL
             logging.info(f"the file id {file_id}")
             filename_with_client_id = f"{client_id}_evidence_{file_id}"
-            file_path = download_file(file_id, filename_with_client_id)
+            file_path = download_file(file_id, f"docs/{filename_with_client_id}")
             logging.info(f"the file path {file_path}")
 
-            saved_files.append(file_path)
+            saved_files.append(filename_with_client_id)
 
         # Process and download policy files from URLs
         for policy_url in policy_urls:
             file_id = policy_url.split('/')[-2]  # Extract file ID from the Google Drive URL
             filename_with_client_id = f"{client_id}_policy_{file_id}"
-            file_path = download_file(file_id, filename_with_client_id)
-            saved_files.append(file_path)
+            file_path = download_file(file_id, f"docs/{filename_with_client_id}")
+            saved_files.append(filename_with_client_id)
 
         contents = await process_file(saved_files)
 
