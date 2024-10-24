@@ -10,13 +10,6 @@ from langchain_community.document_loaders import AzureAIDocumentIntelligenceLoad
 from openai import AsyncAzureOpenAI
 import json
 import tiktoken
-import shutil
-import requests
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
-import io
-
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 httpx_logger = logging.getLogger("httpx")
@@ -75,7 +68,6 @@ async def process_file(filenames):
     try:
         all_documents = {}
 
-        logging.info(f"filename {filenames}")
         # File path where the docs are stored
         files = os.path.join(os.getcwd(), "docs")
 
@@ -115,14 +107,13 @@ async def process_file(filenames):
                 raw_documents = raw_documents[0].page_content
                 all_documents[filename] = [raw_documents]
 
-        logging.info(all_documents)
+        # print(all_documents)
 
         return all_documents
 
     except Exception as e:
         logging.error(f"Error in load_data: {e}")
         return False
-
 
 
 client = AsyncAzureOpenAI(
@@ -146,17 +137,15 @@ async def verify_control(contents, control,start_date, end_date):
             {
                 "role": "user",
                 "content": (
-                    f"Please evaluate the following file contents in relation to the specified control: '{control}', if the control requires a time range for the evidence provided then also confirm that the evidence fall with the following start date = {start_date} and end date = {end_date}. "
-                    f"Your task is to determine whether the evidence provided demonstrates compliance with the requirements of this control. "
+                    f"Please evaluate the following file contents in relation to the specified control: '{control}'. "
+                    f"Your task is to determine whether the evidence provided demonstrates compliance with the requirements of this control. Also if the control states a specific timeline to be satisified then check if the evidence file content falls with the following start date = {start_date} and end date = {end_date} "
                     f"Carefully analyze the content for relevant policies, procedures, or documentation that would indicate adherence to the control. "
-                    f"Some controls do not require any evidence, they can be satisfied solely by the policy files "
                     f"In your response, provide a JSON object structured as follows: "
                     f"{{ 'message': '...', 'reason': '...' }}. "
                     f"1. If the control is satisfied, clearly state that it is satisfied and provide a detailed reason explaining how the evidence supports compliance. "
                     f"2. If the control is not satisfied, indicate that it is not satisfied and provide a specific reason outlining the deficiencies or lack of evidence related to the control requirements. "
                     f"3. The message and the reason should be 2-3 sentences each, covering the details and specfic information that was used to come to the conclusion regarding the evidence."
                     f"Make sure your analysis is thorough and directly linked to the content provided. "
-                    f"The content I am providing with be filenames (which can be a policy file or an evidence file), with their respective text content."
                     f"Content: {contents}"
                 ),
             },
