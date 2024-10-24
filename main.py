@@ -8,7 +8,7 @@ from fastapi.encoders import jsonable_encoder
 import os        
 from fastapi.middleware.cors import CORSMiddleware  
 from utils import check_company, check_date, check_grammar, check_sections, check_infrastructure
-from desc_helpers import process_file, verify_control
+from desc_helpers import process_file, verify_control, get_drive_service, download_file_from_drive, extract_google_drive_file_id
 import re
 from cryptography.fernet import Fernet
 import requests
@@ -119,6 +119,8 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
 
 
 
+drive_service = get_drive_service()
+
 
 @app.post("/get_desc/{client_id}")
 async def get_desc(
@@ -132,36 +134,34 @@ async def get_desc(
 ):
     saved_files = []
 
-    # Download and save evidence files from URLs
-    for evidence_url in evidence_urls:
-        filename_with_client_id = f"{client_id}_evidence_{os.path.basename(evidence_url)}"
-        file_path = os.path.join("docs", filename_with_client_id)
+    try:
 
-        # Download the file from the URL
-        response = requests.get(evidence_url, stream=True)
-        if response.status_code == 200:
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(response.raw, buffer)
+        # Process and download evidence files using Google Drive API
+        for evidence_url in evidence_urls:
+            file_id = extract_google_drive_file_id(evidence_url)  
+            filename_with_client_id = f"{client_id}_evidence_{file_id}.pdf"  
+            file_path = os.path.join("docs", filename_with_client_id)
+            
+            # Download the file from Google Drive
+            download_file_from_drive(drive_service, file_id, file_path)
             saved_files.append(filename_with_client_id)
-        else:
-            return {"error": f"Failed to download evidence file from {evidence_url}"}
 
-    # Download and save policy files from URLs
-    for policy_url in policy_urls:
-        filename_with_client_id = f"{client_id}_policy_{os.path.basename(policy_url)}"
-        file_path = os.path.join("docs", filename_with_client_id)
+        for policy_url in policy_urls:
+            file_id = extract_google_drive_file_id(policy_url)
+            filename_with_client_id = f"{client_id}_policy_{file_id}.pdf"
+            file_path = os.path.join("docs", filename_with_client_id)
 
-        # Download the file from the URL
-        response = requests.get(policy_url, stream=True)
-        if response.status_code == 200:
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(response.raw, buffer)
+            # Download the file from Google Drive
+            download_file_from_drive(drive_service, file_id, file_path)
             saved_files.append(filename_with_client_id)
-        else:
-            return {"error": f"Failed to download policy file from {policy_url}"}
 
-    contents = await process_file(saved_files)
+        contents = await process_file(saved_files)
 
-    ai_response = await verify_control(contents, description, start_date, end_date)
+        ai_response = await verify_control(contents, description, start_date, end_date)
 
-    return ai_response
+        return ai_response
+    
+    except Exception as e:
+            print(f"Error occurred: {e}")
+
+            raise HTTPException(status_code=400, detail=f"Error processing the request: {str(e)}")
