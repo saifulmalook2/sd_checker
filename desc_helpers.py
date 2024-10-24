@@ -17,6 +17,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 import io
 
+
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 httpx_logger = logging.getLogger("httpx")
 httpx_logger.setLevel(logging.WARNING)
@@ -121,32 +122,7 @@ async def process_file(filenames):
         logging.error(f"Error in load_data: {e}")
         return False
 
-CREDENTIALS_FILE = "credentials.json"
 
-# Initialize Google Drive API service
-def get_drive_service():
-    creds = Credentials.from_authorized_user_file(CREDENTIALS_FILE)
-    service = build('drive', 'v3', credentials=creds)
-    return service
-
-# Download file from Google Drive
-def download_file_from_drive(drive_service, file_id, destination):
-    request = drive_service.files().get_media(fileId=file_id)
-    fh = io.FileIO(destination, 'wb')
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-        print(f"Download {int(status.progress() * 100)}%.")
-    return destination
-
-def extract_google_drive_file_id(url):
-    """
-    This function extracts the file ID from a Google Drive URL.
-    Example Google Drive URL: https://drive.google.com/file/d/FILE_ID/view
-    """
-    parts = url.split('/')
-    return parts[5] if 'drive.google.com' in url else None
 
 client = AsyncAzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),

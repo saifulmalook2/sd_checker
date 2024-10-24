@@ -8,14 +8,16 @@ from fastapi.encoders import jsonable_encoder
 import os        
 from fastapi.middleware.cors import CORSMiddleware  
 from utils import check_company, check_date, check_grammar, check_sections, check_infrastructure
-from desc_helpers import process_file, verify_control, get_drive_service, download_file_from_drive, extract_google_drive_file_id
+from desc_helpers import process_file, verify_control
 import re
 from cryptography.fernet import Fernet
 import requests
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload
 import io
+
 
 logging.basicConfig(format="%(levelname)s     %(message)s", level=logging.INFO)
 # hack to get rid of langchain logs
@@ -122,30 +124,29 @@ async def service_check( service_name: str, sections: dict = Body(...), headers:
     return  response
 
 
-SCOPES = ['https://www.googleapis.com/auth/drive']
 
-# Path to your service account JSON key file
-SERVICE_ACCOUNT_FILE = 'gdrive_sample.json'
+scope = ['https://www.googleapis.com/auth/drive']
 
-# Function to create a Google Drive service instance
-def create_drive_service():
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, SCOPES)
-    service = build('drive', 'v3', credentials=credentials)
-    return service
+credentials = service_account.Credentials.from_service_account_file(
+    'prescient_creds_2.json', scopes=scope)
+impersonated_email = 'abdul.rauf@prescientassurance.com'
+credentials = credentials.with_subject(impersonated_email)
+service = build('drive', 'v3', credentials=credentials)
 
-drive_service = create_drive_service()
 
     # Helper function to download files from Google Drive
-def download_file_from_google_drive(file_id, filename_with_client_id):
-    file_path = os.path.join("docs", filename_with_client_id)
-    request = drive_service.files().get_media(fileId=file_id)
-    fh = io.FileIO(file_path, 'wb')
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-
-    return file_path
+def download_file( file_id, path):
+        try:
+            request = service.files().get_media(fileId=file_id)
+            with open(path, 'wb') as f:
+                downloader = MediaIoBaseDownload(f, request)
+                done = False
+                while done is False:
+                    status, done = downloader.next_chunk()
+                    print("Download %d%%." % int(status.progress() * 100))
+            print(f"File downloaded to: {path}")
+        except Exception as e:
+            print(e)
 
 
 @app.post("/get_desc/{client_id}")
@@ -166,7 +167,7 @@ async def get_desc(
             file_id = evidence_url.split('/')[-2]  # Extract file ID from the Google Drive URL
             logging.info(f"the file id {file_id}")
             filename_with_client_id = f"{client_id}_evidence_{file_id}"
-            file_path = download_file_from_google_drive(file_id, filename_with_client_id)
+            file_path = download_file(file_id, filename_with_client_id)
             logging.info(f"the file path {file_path}")
 
             saved_files.append(file_path)
@@ -175,7 +176,7 @@ async def get_desc(
         for policy_url in policy_urls:
             file_id = policy_url.split('/')[-2]  # Extract file ID from the Google Drive URL
             filename_with_client_id = f"{client_id}_policy_{file_id}"
-            file_path = download_file_from_google_drive(file_id, filename_with_client_id)
+            file_path = download_file(file_id, filename_with_client_id)
             saved_files.append(file_path)
 
         contents = await process_file(saved_files)
