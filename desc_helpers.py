@@ -114,7 +114,7 @@ async def process_file(filenames):
                 raw_documents = raw_documents[0].page_content
                 all_documents[filename] = [raw_documents]
 
-        # print(all_documents)
+        logging.info(all_documents)
 
         return all_documents
 
