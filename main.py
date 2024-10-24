@@ -145,6 +145,7 @@ def download_file( file_id, path):
                     status, done = downloader.next_chunk()
                     print("Download %d%%." % int(status.progress() * 100))
             print(f"File downloaded to: {path}")
+            return path
         except Exception as e:
             print(e)
 
